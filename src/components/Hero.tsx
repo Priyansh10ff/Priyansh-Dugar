@@ -28,8 +28,8 @@ export default function Hero() {
       </h1>
       <div className="hero-foot">
         <p className="hero-line">
-          I build software that notices when things break, and patches them before
-          anyone has to. Studying at Scaler School of Technology, Bengaluru.
+          I build software that notices when things break, and patches them before anyone has to.
+          Full-stack AI developer, studying at Scaler School of Technology, Bengaluru.
         </p>
         <p className="hint" id="hint">
           Scroll to stitch it together

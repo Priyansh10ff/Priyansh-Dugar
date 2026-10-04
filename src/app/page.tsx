@@ -3,12 +3,19 @@ import Nav from "@/components/Nav";
 import Hero from "@/components/Hero";
 import Manifesto from "@/components/Manifesto";
 import Work from "@/components/Work";
+import Stats from "@/components/Stats";
+import Projects from "@/components/Projects";
 import Marquee from "@/components/Marquee";
 import OffTheClock from "@/components/OffTheClock";
 import Contact from "@/components/Contact";
 import Motion from "@/components/Motion";
+import { getAllStats } from "@/lib/stats";
 
-export default function Page() {
+// Re-render on the server at most once an hour; stats fetches are cached for the same window.
+export const revalidate = 3600;
+
+export default async function Page() {
+  const stats = await getAllStats();
   return (
     <>
       <Loader />
@@ -18,8 +25,10 @@ export default function Page() {
         <Hero />
         <Manifesto />
         <Work />
+        <Stats stats={stats} />
+        <Projects />
         <Marquee />
-        <OffTheClock />
+        <OffTheClock chess={stats.chess} />
         <Contact />
       </main>
       <Motion />

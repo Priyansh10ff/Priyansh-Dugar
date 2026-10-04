@@ -6,6 +6,8 @@ export default function Nav() {
       </a>
       <nav>
         <a href="#work">Work</a>
+        <a href="#stats">Numbers</a>
+        <a href="#projects">Projects</a>
         <a href="#off">Off the clock</a>
         <a className="pill magnetic" href="#contact">
           Say hello

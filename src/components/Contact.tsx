@@ -1,6 +1,7 @@
-const EMAIL = "priyansh10work@gmail.com";
+import { PROFILE } from "@/data/projects";
 
 export default function Contact() {
+  const EMAIL = PROFILE.email;
   return (
     <section className="contact" id="contact" aria-label="Contact">
       <div>
@@ -18,15 +19,20 @@ export default function Contact() {
           <a className="btn magnetic" href={`mailto:${EMAIL}`}>
             Email me
           </a>
+          <a className="btn ghost magnetic" href={PROFILE.links.resume} target="_blank" rel="noopener noreferrer">
+            Resume
+          </a>
         </div>
       </div>
       <footer>
-        <span>Made in Bengaluru</span>
+        <span>Made in Bengaluru · {new Date().getFullYear()}</span>
         <nav>
-          <a href="https://github.com/Priyansh10ff">GitHub</a>
-          <a href="https://www.linkedin.com/in/priyansh-dugar-709333363/">LinkedIn</a>
-          <a href="https://x.com/_Priyansh_10">X</a>
-          <a href="https://leetcode.com/u/_priyansh_10">LeetCode</a>
+          <a href={PROFILE.links.github} target="_blank" rel="noopener noreferrer">GitHub</a>
+          <a href={PROFILE.links.linkedin} target="_blank" rel="noopener noreferrer">LinkedIn</a>
+          <a href={PROFILE.links.x} target="_blank" rel="noopener noreferrer">X</a>
+          <a href={PROFILE.links.leetcode} target="_blank" rel="noopener noreferrer">LeetCode</a>
+          <a href={PROFILE.links.codeforces} target="_blank" rel="noopener noreferrer">Codeforces</a>
+          <a href={PROFILE.links.huggingface} target="_blank" rel="noopener noreferrer">Hugging Face</a>
         </nav>
       </footer>
     </section>

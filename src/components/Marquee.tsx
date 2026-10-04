@@ -1,4 +1,4 @@
-const TOOLS = ["Next.js", "Supabase", "Claude API", "Tailwind", "TypeScript", "Cursor"];
+import { TOOLS } from "@/data/projects";
 
 function Row({ outline, dir }: { outline?: boolean; dir: 1 | -1 }) {
   const items = Array.from({ length: 4 }, () => TOOLS).flat();

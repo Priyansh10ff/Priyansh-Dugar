@@ -23,11 +23,7 @@ export default function Motion() {
 
     gsap.registerPlugin(ScrollTrigger);
     const cleanups: Array<() => void> = [];
-    const on = <K extends keyof HTMLElementEventMap>(
-      el: Element | Window,
-      type: K | string,
-      fn: EventListenerOrEventListenerObject,
-    ) => {
+    const on = (el: Element | Window, type: string, fn: EventListenerOrEventListenerObject) => {
       el.addEventListener(type, fn);
       cleanups.push(() => el.removeEventListener(type, fn));
     };
@@ -195,6 +191,48 @@ export default function Motion() {
             },
           },
         );
+      });
+
+      // ---- stats: patches drop in, numbers count up ----
+      gsap.from(".stat", {
+        y: 60,
+        opacity: 0,
+        rotation: (i) => (i % 2 ? 6 : -6),
+        duration: 1,
+        ease: "expo.out",
+        stagger: 0.08,
+        scrollTrigger: { trigger: ".stats", start: "top 75%" },
+      });
+      document.querySelectorAll<HTMLElement>(".stat .v[data-n]").forEach((el) => {
+        const target = Number(el.dataset.n);
+        if (!Number.isFinite(target)) return;
+        const o = { v: 0 };
+        const f = new Intl.NumberFormat("en-IN");
+        gsap.to(o, {
+          v: target,
+          duration: 1.6,
+          ease: "power3.out",
+          onUpdate: () => (el.textContent = f.format(Math.round(o.v))),
+          scrollTrigger: { trigger: el, start: "top 85%" },
+        });
+      });
+      gsap.from(".heat i", {
+        scale: 0,
+        transformOrigin: "50% 50%",
+        duration: 0.5,
+        ease: "back.out(2)",
+        stagger: { each: 0.0025, from: "start" },
+        scrollTrigger: { trigger: ".heat", start: "top 85%" },
+      });
+
+      // ---- projects grid: stagger in ----
+      gsap.from(".proj", {
+        y: 50,
+        opacity: 0,
+        duration: 0.9,
+        ease: "expo.out",
+        stagger: { each: 0.06, grid: "auto", from: "start" },
+        scrollTrigger: { trigger: ".proj-grid", start: "top 80%" },
       });
 
       // ---- marquee: direction follows scroll, speed follows velocity ----
