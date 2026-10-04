@@ -4,7 +4,7 @@
 // Scene, materials, camera rig and move list are from the "Endgame" prototype;
 // only the sizing (fills the card, not the viewport) and lifecycle differ.
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
@@ -21,7 +21,82 @@ export const CHESS_WORDS: { from: number; to: number; text: string; note?: boole
   { from: 0.86, to: 1.01, text: "Checkmate. Four moves." },
 ];
 
+/* ---- tiny synthesized sound kit (no audio files) ---- */
+type Sfx = "lift" | "land" | "capture" | "mate";
+function makeSfx() {
+  let ctx: AudioContext | null = null;
+  const ensure = () => {
+    if (!ctx) ctx = new (window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext)();
+    if (ctx.state === "suspended") ctx.resume();
+    return ctx;
+  };
+  const noise = (c: AudioContext, dur: number, cutoff: number, gain: number, t0: number) => {
+    const buf = c.createBuffer(1, Math.ceil(c.sampleRate * dur), c.sampleRate);
+    const d = buf.getChannelData(0);
+    for (let i = 0; i < d.length; i++) d[i] = (Math.random() * 2 - 1) * (1 - i / d.length) ** 2;
+    const src = c.createBufferSource();
+    src.buffer = buf;
+    const f = c.createBiquadFilter();
+    f.type = "lowpass";
+    f.frequency.value = cutoff;
+    const g = c.createGain();
+    g.gain.setValueAtTime(gain, t0);
+    g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+    src.connect(f).connect(g).connect(c.destination);
+    src.start(t0);
+  };
+  const tone = (c: AudioContext, freq: number, dur: number, gain: number, t0: number, type: OscillatorType = "sine") => {
+    const o = c.createOscillator();
+    o.type = type;
+    o.frequency.setValueAtTime(freq, t0);
+    o.frequency.exponentialRampToValueAtTime(Math.max(30, freq * 0.6), t0 + dur);
+    const g = c.createGain();
+    g.gain.setValueAtTime(gain, t0);
+    g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+    o.connect(g).connect(c.destination);
+    o.start(t0);
+    o.stop(t0 + dur);
+  };
+  return {
+    unlock: ensure,
+    play(kind: Sfx) {
+      if (!ctx) return;
+      const c = ctx;
+      const t = c.currentTime;
+      if (kind === "lift") noise(c, 0.07, 2400, 0.12, t);
+      if (kind === "land") {
+        noise(c, 0.09, 900, 0.5, t);
+        tone(c, 170, 0.13, 0.35, t);
+      }
+      if (kind === "capture") {
+        noise(c, 0.12, 1400, 0.7, t);
+        tone(c, 140, 0.18, 0.45, t);
+        noise(c, 0.05, 3000, 0.3, t + 0.09);
+      }
+      if (kind === "mate") {
+        noise(c, 0.14, 800, 0.6, t);
+        tone(c, 110, 0.9, 0.3, t);
+        tone(c, 165, 0.9, 0.18, t + 0.02);
+        tone(c, 220, 0.7, 0.1, t + 0.04, "triangle");
+      }
+    },
+  };
+}
+
 export default function ChessScene() {
+  const [sound, setSound] = useState(false);
+  const soundRef = useRef(false);
+  const sfxRef = useRef<ReturnType<typeof makeSfx> | null>(null);
+  const toggleSound = () => {
+    if (!sfxRef.current) sfxRef.current = makeSfx();
+    const next = !soundRef.current;
+    if (next) {
+      sfxRef.current.unlock();
+      sfxRef.current.play("land");
+    }
+    soundRef.current = next;
+    setSound(next);
+  };
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const wordsRef = useRef<HTMLDivElement>(null);
   const barRef = useRef<HTMLDivElement>(null);
@@ -194,6 +269,11 @@ export default function ChessScene() {
 
       // master timeline
       const tl = gsap.timeline({ paused: true });
+      const sfx = (kind: Sfx) => {
+        if (soundRef.current && sfxRef.current) sfxRef.current.play(kind);
+      };
+      // pieces landing in the intro: a few thuds, not 32
+      [0.55, 0.62, 0.7, 0.78, 0.86].forEach((t) => tl.call(sfx, ["land"], t));
       all.forEach((p, i) => tl.to(p.outer.position, { x: p.base.x, z: p.base.z, y: 0, duration: 0.8, ease: "power3.inOut" }, 0.01 * (i % 16)));
       all.forEach((p, i) => tl.to(p.outer.rotation, { x: 0, z: 0, duration: 0.8, ease: "power3.inOut" }, 0.01 * (i % 16)));
       tl.to(cam, { x: 0.3, y: 3.6, z: 8, duration: 1, ease: "power2.inOut" }, 1).to(tgt, { x: 0, y: 0, z: 0.8, duration: 1, ease: "power2.inOut" }, 1);
@@ -205,6 +285,7 @@ export default function ChessScene() {
         delete at[from];
         const s = sq(to);
         const lift = p.knight ? 1.4 : 0.7;
+        tl.call(sfx, ["lift"], t).call(sfx, ["land"], t + d);
         tl.to(p.outer.position, { x: s.x, z: s.z, duration: d, ease: "power2.inOut" }, t)
           .to(p.outer.position, { y: lift, duration: d / 2, ease: "power2.out" }, t)
           .to(p.outer.position, { y: 0, duration: d / 2, ease: "bounce.out" }, t + d / 2);
@@ -221,9 +302,11 @@ export default function ChessScene() {
       tl.to(cam, { x: 0, y: 13.5, z: 0.01, duration: 1, ease: "power2.inOut" }, 6.1).to(tgt, { x: 0, y: 0, z: 0, duration: 1 }, 6.1);
       tl.to(cam, { x: 3.2, y: 1.6, z: -0.6, duration: 1.2, ease: "power2.inOut" }, 8).to(tgt, { x: 0.6, y: 0.5, z: -3.2, duration: 1.2, ease: "power2.inOut" }, 8);
       const f7 = at["f7"];
+      tl.call(sfx, ["capture"], 8.3);
       tl.to(f7.outer.position, { x: 5.6, z: -2.2, y: 0, duration: 0.5, ease: "power3.in" }, 8.25).to(f7.outer.rotation, { z: -Math.PI / 2, duration: 0.4 }, 8.3);
-      move("h5", "f7", 8.2, 0.55);
+      move("h5", "f7", 8.2, 0.55); // its own "land" plus the capture above
       const k = pieces["e8"];
+      tl.call(sfx, ["mate"], 9.05);
       tl.to(k.outer.rotation, { z: -Math.PI / 2, duration: 0.6, ease: "bounce.out" }, 9)
         .to(k.outer.position, { x: sq("e8").x + 0.42, y: 0.2, duration: 0.6, ease: "bounce.out" }, 9)
         .to({}, { duration: 0.6 });
@@ -321,6 +404,9 @@ export default function ChessScene() {
       <div className="board-bar" aria-hidden="true">
         <div ref={barRef} />
       </div>
+      <button type="button" className="board-sound" onClick={toggleSound} aria-pressed={sound}>
+        <span aria-hidden="true">{sound ? "◉" : "○"}</span> Sound {sound ? "on" : "off"}
+      </button>
     </>
   );
 }

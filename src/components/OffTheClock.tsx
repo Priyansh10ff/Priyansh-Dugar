@@ -1,5 +1,5 @@
 import { PROFILE } from "@/data/projects";
-import { F1_LINE, SHAYARI } from "@/data/content";
+import { F1_LINE, PUBLIC_PILLARS } from "@/data/content";
 import { fmt, type ChessStats } from "@/lib/stats";
 import ChessScene from "./ChessScene";
 
@@ -48,10 +48,20 @@ export default function OffTheClock({ chess }: { chess: ChessStats }) {
           className="stack-card"
           style={{ "--i": 2, "--c": "#F2A93B", "--tc": "#121A35", "--stitch": "#121A35" } as React.CSSProperties}
         >
-          <h3>Shayari</h3>
+          <h3>Building in public</h3>
           <div>
-            <p className="verse">{SHAYARI}</p>
-            <p style={{ marginTop: 18, opacity: 0.8 }}>I write shayari when the code won&apos;t compile.</p>
+            <p>
+              The journey, the F1 takes and the occasional dev-culture opinion go on{" "}
+              <a href={PROFILE.links.x} target="_blank" rel="noopener noreferrer">
+                X
+              </a>
+              . No threads about productivity.
+            </p>
+            <div className="mini">
+              {PUBLIC_PILLARS.map((p) => (
+                <span key={p}>{p}</span>
+              ))}
+            </div>
           </div>
         </div>
       </section>

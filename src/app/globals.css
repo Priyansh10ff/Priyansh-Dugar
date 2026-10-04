@@ -199,6 +199,11 @@ html.has-thread, html.has-thread *{cursor:none !important}
 .board-foot .mini span{font-size:14px; padding:6px 12px; border:1.5px solid #D2AE68; border-radius:999px; background:rgba(11,38,29,.55); backdrop-filter:blur(6px)}
 .board-bar{position:absolute; left:14px; right:14px; bottom:14px; height:2px; z-index:3; background:rgba(210,174,104,.25)}
 .board-bar div{height:100%; background:#D2AE68; transform-origin:0 50%; transform:scaleX(0)}
+.board-sound{position:absolute; top:clamp(28px,4vw,64px); right:clamp(28px,4vw,64px); z-index:4; display:inline-flex; align-items:center; gap:8px;
+  padding:9px 14px; border-radius:999px; border:1.5px solid #D2AE68; background:rgba(11,38,29,.6); color:#F2EADB; font:600 14px var(--body);
+  backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px); cursor:pointer}
+.board-sound:hover{background:rgba(210,174,104,.2)}
+.board-sound[aria-pressed="true"]{background:#D2AE68; color:#0B261D}
 @media (pointer:coarse), (prefers-reduced-motion:reduce){.board-spacer{height:8vh} .board-bar{display:none}}
 @media (max-width:720px){.board-foot{grid-template-columns:1fr; gap:14px} .board-words span{font-size:clamp(28px,8vw,48px)}}
 
@@ -213,7 +218,6 @@ html.has-thread, html.has-thread *{cursor:none !important}
 .stack-card a{text-decoration:underline; text-underline-offset:4px}
 .stack-card .mini{display:flex; gap:10px; flex-wrap:wrap; margin-top:18px}
 .stack-card .mini span{font-size:14px; padding:6px 12px; border:1.5px solid currentColor; border-radius:999px; opacity:.85}
-.stack-card .verse{font-family:var(--display); font-weight:500; font-variation-settings:"wdth" 90; font-size:clamp(22px,2.4vw,34px); line-height:1.25; letter-spacing:-.01em; white-space:pre-line}
 @media (max-width:720px){.stack-card{grid-template-columns:1fr}}
 
 /* contact */

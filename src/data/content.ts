@@ -70,8 +70,7 @@ export const OSS_FALLBACK: { repo: string; title: string; href: string; mergedAt
   { repo: "prismor", title: "Contributions to prismor.dev", href: "https://prismor.dev" }, // TODO: real PR links
 ];
 
-// Replace with your own. Keep \n for line breaks.
-export const SHAYARI = `[Pehli line yahan]
-[Doosri line yahan]`;
+// Chips on the "Building in public" card.
+export const PUBLIC_PILLARS = ["Startup journey", "F1", "Dev culture", "Bengaluru"];
 
-export const F1_LINE = "I watch every race, including the boring ones. Built F1Hub and hotlapdaily because the official app wasn't enough. [Your team and driver here.]";
+export const F1_LINE = "I watch every race, including the boring ones. Mercedes, through the good years and the other ones. Built F1Hub and hotlapdaily because the official app wasn't enough.";
