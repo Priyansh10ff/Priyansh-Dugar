@@ -165,3 +165,24 @@ export async function getAllStats(): Promise<AllStats> {
 }
 
 export const fmt = (n: number | null, fallback = "—") => (n == null ? fallback : new Intl.NumberFormat("en-IN").format(n));
+
+/* ---------------- GitHub: merged PRs to other people's repos ---------------- */
+
+export type MergedPR = { repo: string; title: string; href: string; mergedAt: string };
+
+export async function getMergedPRs(): Promise<MergedPR[]> {
+  const token = process.env.GITHUB_TOKEN;
+  type R = { items?: { title: string; html_url: string; repository_url: string; pull_request?: { merged_at: string | null } }[] };
+  const q = encodeURIComponent(`is:pr is:merged author:${PROFILE.github} -user:${PROFILE.github}`);
+  const r = await getJSON<R>(`https://api.github.com/search/issues?q=${q}&sort=updated&order=desc&per_page=8`, {
+    headers: { Accept: "application/vnd.github+json", ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+  });
+  return (r?.items ?? [])
+    .filter((i) => i.pull_request?.merged_at)
+    .map((i) => ({
+      repo: i.repository_url.replace("https://api.github.com/repos/", ""),
+      title: i.title,
+      href: i.html_url,
+      mergedAt: i.pull_request!.merged_at!,
+    }));
+}

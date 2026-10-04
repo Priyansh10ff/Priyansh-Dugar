@@ -235,23 +235,38 @@ export default function Motion() {
         scrollTrigger: { trigger: ".proj-grid", start: "top 80%" },
       });
 
-      // ---- marquee: direction follows scroll, speed follows velocity ----
-      const rows = gsap.utils.toArray<HTMLElement>(".mq-row").map((r) => ({
-        el: r.querySelector<HTMLElement>(".mq-inner")!,
-        dir: +(r.dataset.dir ?? 1),
-        x: 0,
-      }));
-      const wrap = gsap.utils.wrap(-50, 0);
-      let scrollDir = 1;
-      lenis.on("scroll", (e) => {
-        if (e.direction) scrollDir = e.direction;
+      // ---- open source rows + journey timeline: reveal ----
+      gsap.from(".oss-row", {
+        x: -40,
+        opacity: 0,
+        duration: 0.8,
+        ease: "expo.out",
+        stagger: 0.06,
+        scrollTrigger: { trigger: ".oss-list", start: "top 80%" },
       });
-      tick((_, dt) => {
-        const vel = Math.min(Math.abs(lenis.velocity), 60);
-        rows.forEach((r) => {
-          r.x = wrap(r.x - (0.04 + vel * 0.02) * r.dir * scrollDir * dt * 0.06);
-          gsap.set(r.el, { xPercent: r.x });
+      gsap.utils.toArray<HTMLElement>(".tl-item").forEach((item) => {
+        gsap.from(item, {
+          y: 40,
+          opacity: 0,
+          duration: 0.9,
+          ease: "expo.out",
+          scrollTrigger: { trigger: item, start: "top 85%" },
         });
+      });
+      gsap.from(".now", {
+        y: 40,
+        opacity: 0,
+        rotation: 6,
+        duration: 1,
+        ease: "expo.out",
+        scrollTrigger: { trigger: ".journey", start: "top 70%" },
+      });
+      gsap.from(".board-card", {
+        y: 80,
+        opacity: 0,
+        duration: 1.1,
+        ease: "expo.out",
+        scrollTrigger: { trigger: ".endgame", start: "top 85%" },
       });
 
       // ---- off the clock: stacking cards ----
