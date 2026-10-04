@@ -21,7 +21,7 @@ export const CHESS_WORDS: { from: number; to: number; text: string; note?: boole
   { from: 0.86, to: 1.01, text: "Checkmate. Four moves." },
 ];
 
-export default function ChessScene({ sectionSelector }: { sectionSelector: string }) {
+export default function ChessScene() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const wordsRef = useRef<HTMLDivElement>(null);
   const barRef = useRef<HTMLDivElement>(null);
@@ -269,9 +269,9 @@ export default function ChessScene({ sectionSelector }: { sectionSelector: strin
         render(0);
       } else {
         const st = ScrollTrigger.create({
-          trigger: sectionSelector,
-          start: "top top",
-          end: "bottom bottom",
+          trigger: host, // the sticky card: starts when it docks at 12vh, runs for the spacer's 300vh
+          start: "top 12%",
+          end: "+=300%",
           scrub: 1.2,
           onUpdate: (self) => {
             progress = self.progress;
@@ -306,7 +306,7 @@ export default function ChessScene({ sectionSelector }: { sectionSelector: strin
       disposed = true;
       cleanups.forEach((fn) => fn());
     };
-  }, [sectionSelector]);
+  }, []);
 
   return (
     <>

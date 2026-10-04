@@ -180,9 +180,9 @@ html.has-thread, html.has-thread *{cursor:none !important}
 /* off the clock */
 .off-head{padding:0 5vw}
 .off-head .sec-h{margin-bottom:4vh}
-.endgame{position:relative; height:400vh; padding:0 5vw}
-.board-card{position:sticky; top:12vh; height:76vh; border-radius:18px; overflow:hidden; background:#12382C; color:#F2EADB;
-  box-shadow:0 -20px 50px -30px rgba(0,0,0,.6); isolation:isolate}
+.board-card{position:sticky; top:calc(12vh + var(--i) * 26px); height:76vh; border-radius:18px; overflow:hidden; background:#12382C; color:#F2EADB;
+  box-shadow:0 -20px 50px -30px rgba(0,0,0,.6); isolation:isolate; transform-origin:50% 0}
+.board-spacer{height:300vh}
 .board-card::after{content:""; position:absolute; inset:14px; border:2px dashed #D2AE68; border-radius:10px; pointer-events:none; z-index:3}
 .board-gl{position:absolute; inset:0; width:100%; height:100%; display:block; z-index:0}
 .board-words{position:absolute; left:clamp(28px,4vw,64px); top:clamp(28px,4vw,64px); right:clamp(28px,4vw,64px); z-index:2; pointer-events:none}
@@ -199,7 +199,7 @@ html.has-thread, html.has-thread *{cursor:none !important}
 .board-foot .mini span{font-size:14px; padding:6px 12px; border:1.5px solid #D2AE68; border-radius:999px; background:rgba(11,38,29,.55); backdrop-filter:blur(6px)}
 .board-bar{position:absolute; left:14px; right:14px; bottom:14px; height:2px; z-index:3; background:rgba(210,174,104,.25)}
 .board-bar div{height:100%; background:#D2AE68; transform-origin:0 50%; transform:scaleX(0)}
-@media (pointer:coarse), (prefers-reduced-motion:reduce){.endgame{height:auto; padding-bottom:8vh} .board-card{position:relative; top:0} .board-bar{display:none}}
+@media (pointer:coarse), (prefers-reduced-motion:reduce){.board-spacer{height:8vh} .board-bar{display:none}}
 @media (max-width:720px){.board-foot{grid-template-columns:1fr; gap:14px} .board-words span{font-size:clamp(28px,8vw,48px)}}
 
 .off{padding:0 5vw 12vh}

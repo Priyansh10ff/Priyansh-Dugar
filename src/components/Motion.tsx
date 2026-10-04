@@ -266,20 +266,24 @@ export default function Motion() {
         opacity: 0,
         duration: 1.1,
         ease: "expo.out",
-        scrollTrigger: { trigger: ".endgame", start: "top 85%" },
+        scrollTrigger: { trigger: ".board-card", start: "top 85%" },
       });
 
       // ---- off the clock: stacking cards ----
-      const stack = gsap.utils.toArray<HTMLElement>(".stack-card");
+      const stack = gsap.utils.toArray<HTMLElement>(".board-card, .stack-card");
       stack.forEach((card, i) => {
         const next = stack[i + 1];
         if (!next) return;
-        gsap.to(card, {
-          scale: 0.9,
-          filter: "brightness(0.6)",
-          ease: "none",
-          scrollTrigger: { trigger: next, start: "top bottom", end: "top 15%", scrub: true },
-        });
+        gsap.fromTo(
+          card,
+          { scale: 1, filter: "brightness(1)" },
+          {
+            scale: 0.9,
+            filter: "brightness(0.6)",
+            ease: "none",
+            scrollTrigger: { trigger: next, start: "top bottom", end: "top 15%", scrub: true },
+          },
+        );
       });
 
       // ---- contact: email wave ----

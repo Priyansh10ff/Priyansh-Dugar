@@ -10,10 +10,10 @@ export default function OffTheClock({ chess }: { chess: ChessStats }) {
         <h2 className="sec-h">When I&apos;m not shipping</h2>
       </section>
 
-      {/* Chess: sticky card, 3D game scrubbed by the scroll through this 400vh section */}
-      <section className="endgame" id="endgame" aria-label="Chess">
-        <div className="board-card">
-          <ChessScene sectionSelector="#endgame" />
+      <section className="off" aria-label="Off the clock cards">
+        {/* Chess: sticky like the other cards; the spacer below gives the 3D game 300vh of scroll to play in */}
+        <div className="board-card" style={{ "--i": 0 } as React.CSSProperties}>
+          <ChessScene />
           <div className="board-foot">
             <h3>Chess</h3>
             <div>
@@ -35,19 +35,18 @@ export default function OffTheClock({ chess }: { chess: ChessStats }) {
             </div>
           </div>
         </div>
-      </section>
+        <div className="board-spacer" aria-hidden="true" />
 
-      <section className="off" aria-label="More off the clock">
         <div
           className="stack-card"
-          style={{ "--i": 0, "--c": "#B83A28", "--tc": "#EFEBE3", "--stitch": "#F2A93B" } as React.CSSProperties}
+          style={{ "--i": 1, "--c": "#B83A28", "--tc": "#EFEBE3", "--stitch": "#F2A93B" } as React.CSSProperties}
         >
           <h3>Formula 1</h3>
           <p>{F1_LINE}</p>
         </div>
         <div
           className="stack-card"
-          style={{ "--i": 1, "--c": "#F2A93B", "--tc": "#121A35", "--stitch": "#121A35" } as React.CSSProperties}
+          style={{ "--i": 2, "--c": "#F2A93B", "--tc": "#121A35", "--stitch": "#121A35" } as React.CSSProperties}
         >
           <h3>Shayari</h3>
           <div>
