@@ -107,6 +107,7 @@ function makeSfx() {
 
 export default function PitStopScene() {
   const [sound, setSound] = useState(false);
+  const [isStatic, setIsStatic] = useState(false);
   const soundRef = useRef(false);
   const sfxRef = useRef<ReturnType<typeof makeSfx> | null>(null);
   const toggleSound = () => {
@@ -130,7 +131,8 @@ export default function PitStopScene() {
     if (!canvas || !wordsEl) return;
     const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
     const coarse = matchMedia("(pointer: coarse)").matches;
-    const staticMode = reduce || coarse;
+    const staticMode = reduce || (coarse && innerWidth < 768);
+    setIsStatic(staticMode);
     const wordEls = Array.from(wordsEl.querySelectorAll<HTMLElement>("span"));
     const bar = barRef.current;
     const clock = clockRef.current;
@@ -150,7 +152,7 @@ export default function PitStopScene() {
 
       const host = canvas.parentElement!;
       const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: "high-performance" });
-      renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+      renderer.setPixelRatio(Math.min(devicePixelRatio, staticMode ? 1.5 : 2));
       renderer.outputColorSpace = THREE.SRGBColorSpace;
       renderer.shadowMap.enabled = true;
       renderer.shadowMap.type = THREE.PCFSoftShadowMap;
@@ -170,12 +172,14 @@ export default function PitStopScene() {
       });
       const camera = new THREE.PerspectiveCamera(36, 1, 0.1, 100);
 
+      let rerender: (() => void) | null = null;
       const size = () => {
         const w = host.clientWidth || 1,
           h = host.clientHeight || 1;
         renderer.setSize(w, h, false);
         camera.aspect = w / h;
         camera.updateProjectionMatrix();
+        rerender?.();
       };
       size();
       const ro = new ResizeObserver(size);
@@ -481,9 +485,10 @@ export default function PitStopScene() {
       };
 
       if (staticMode) {
-        tl.progress(1);
-        setUI(1);
+        tl.progress(0.52); // parked in the box, softs going on
+        setUI(0.52);
         render(0);
+        rerender = () => render(0);
       } else {
         const st = ScrollTrigger.create({
           trigger: host,
@@ -543,9 +548,11 @@ export default function PitStopScene() {
       <div className="board-bar pit-bar" aria-hidden="true">
         <div ref={barRef} />
       </div>
+      {!isStatic && (
       <button type="button" className="board-sound pit-sound" onClick={toggleSound} aria-pressed={sound}>
         <span aria-hidden="true">{sound ? "◉" : "○"}</span> Sound {sound ? "on" : "off"}
       </button>
+      )}
     </>
   );
 }

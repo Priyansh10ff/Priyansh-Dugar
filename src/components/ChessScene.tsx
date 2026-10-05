@@ -85,6 +85,7 @@ function makeSfx() {
 
 export default function ChessScene() {
   const [sound, setSound] = useState(false);
+  const [isStatic, setIsStatic] = useState(false);
   const soundRef = useRef(false);
   const sfxRef = useRef<ReturnType<typeof makeSfx> | null>(null);
   const toggleSound = () => {
@@ -108,7 +109,8 @@ export default function ChessScene() {
     if (!canvas || !wordsEl) return;
     const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
     const coarse = matchMedia("(pointer: coarse)").matches;
-    const staticMode = reduce || coarse; // phones + reduced motion: render the final frame once
+    const staticMode = reduce || (coarse && innerWidth < 768);
+    setIsStatic(staticMode); // phones + reduced motion: render the final frame once
     const wordEls = Array.from(wordsEl.querySelectorAll<HTMLElement>("span"));
 
     let disposed = false;
@@ -121,7 +123,7 @@ export default function ChessScene() {
 
       const host = canvas.parentElement!;
       const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: "high-performance" });
-      renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+      renderer.setPixelRatio(Math.min(devicePixelRatio, staticMode ? 1.5 : 2));
       renderer.outputColorSpace = THREE.SRGBColorSpace;
       renderer.shadowMap.enabled = true;
       renderer.shadowMap.type = THREE.PCFSoftShadowMap;
@@ -131,12 +133,14 @@ export default function ChessScene() {
       scene.fog = new THREE.Fog("#12382C", 16, 34);
       const camera = new THREE.PerspectiveCamera(38, 1, 0.1, 100);
 
+      let rerender: (() => void) | null = null;
       const size = () => {
         const w = host.clientWidth || 1,
           h = host.clientHeight || 1;
         renderer.setSize(w, h, false);
         camera.aspect = w / h;
         camera.updateProjectionMatrix();
+        rerender?.();
       };
       size();
       const ro = new ResizeObserver(size);
@@ -350,6 +354,7 @@ export default function ChessScene() {
         tl.progress(1);
         setWords(1);
         render(0);
+        rerender = () => render(0);
       } else {
         const st = ScrollTrigger.create({
           trigger: host, // the sticky card: starts when it docks at 12vh, runs for the spacer's 300vh
@@ -404,9 +409,11 @@ export default function ChessScene() {
       <div className="board-bar" aria-hidden="true">
         <div ref={barRef} />
       </div>
+      {!isStatic && (
       <button type="button" className="board-sound" onClick={toggleSound} aria-pressed={sound}>
         <span aria-hidden="true">{sound ? "◉" : "○"}</span> Sound {sound ? "on" : "off"}
       </button>
+      )}
     </>
   );
 }

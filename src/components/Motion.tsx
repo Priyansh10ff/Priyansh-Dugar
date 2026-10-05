@@ -22,6 +22,7 @@ export default function Motion() {
     }
 
     gsap.registerPlugin(ScrollTrigger);
+    ScrollTrigger.config({ ignoreMobileResize: true });
     const cleanups: Array<() => void> = [];
     const on = (el: Element | Window, type: string, fn: EventListenerOrEventListenerObject) => {
       el.addEventListener(type, fn);
@@ -32,7 +33,7 @@ export default function Motion() {
       cleanups.push(() => gsap.ticker.remove(fn));
     };
 
-    const ctx = gsap.context(() => {
+    const ctx: gsap.Context = gsap.context(() => {
       // ---- smooth scroll ----
       const lenis = new Lenis({ lerp: 0.085, smoothWheel: true });
       lenis.on("scroll", ScrollTrigger.update);
@@ -80,6 +81,39 @@ export default function Motion() {
         });
       });
 
+      // ---- hero scroll: stitch the name together ----
+      // Created only after the intro has dropped the letters, so the scrub records the
+      // scattered positions as its start (otherwise, on slow devices, it can pin them off-screen).
+      const buildHeroScroll = () =>
+        ctx.add(() => {
+          const heroTl = gsap.timeline({
+            scrollTrigger: {
+              trigger: ".hero",
+              start: "top top",
+              end: "+=140%",
+              pin: true,
+              scrub: 1,
+              onUpdate: (self) => {
+                loose = 1 - self.progress;
+              },
+            },
+          });
+          heroTl
+            .to(patches, {
+              x: 0,
+              y: 0,
+              scale: 1,
+              rotation: (i) => +(patches[i].dataset.r ?? 0),
+              ease: "power3.inOut",
+              stagger: 0.05,
+              duration: 1,
+            })
+            .to(patches, { "--st": 1, ease: "none", stagger: 0.06, duration: 0.5 }, "-=0.25")
+            .to("#hint", { opacity: 0, duration: 0.2 }, 0)
+            .fromTo(".hero-line", { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.4 }, "-=0.3");
+          ScrollTrigger.refresh();
+        });
+
       // ---- loader -> intro ----
       const counter = { v: 0 };
       const path = document.getElementById("loaderPath");
@@ -88,6 +122,7 @@ export default function Motion() {
       const intro = gsap.timeline({
         onComplete: () => {
           if (loader) loader.style.display = "none";
+          buildHeroScroll();
           lenis.start();
           ScrollTrigger.refresh();
         },
@@ -107,33 +142,6 @@ export default function Motion() {
         .to(".loader-half.top", { yPercent: -100, duration: 1, ease: "expo.inOut" }, "<")
         .to(".loader-half.bottom", { yPercent: 100, duration: 1, ease: "expo.inOut" }, "<")
         .to(patches, { y: (i) => scatter[i].y, duration: 1.4, ease: "elastic.out(1, 0.55)", stagger: 0.06 }, "<0.35");
-
-      // ---- hero scroll: stitch the name together ----
-      const heroTl = gsap.timeline({
-        scrollTrigger: {
-          trigger: ".hero",
-          start: "top top",
-          end: "+=140%",
-          pin: true,
-          scrub: 1,
-          onUpdate: (self) => {
-            loose = 1 - self.progress;
-          },
-        },
-      });
-      heroTl
-        .to(patches, {
-          x: 0,
-          y: 0,
-          scale: 1,
-          rotation: (i) => +(patches[i].dataset.r ?? 0),
-          ease: "power3.inOut",
-          stagger: 0.05,
-          duration: 1,
-        })
-        .to(patches, { "--st": 1, ease: "none", stagger: 0.06, duration: 0.5 }, "-=0.25")
-        .to("#hint", { opacity: 0, duration: 0.2 }, 0)
-        .fromTo(".hero-line", { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.4 }, "-=0.3");
 
       // ---- manifesto: words light up ----
       gsap.to("#manifesto .w", {
