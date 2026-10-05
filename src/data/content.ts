@@ -76,3 +76,6 @@ export const PUBLIC_PILLARS = ["Startup journey", "F1", "Dev culture", "Bengalur
 export const DRIVER_NUMBER = "63"; // TODO: 63 Russell or 12 Antonelli
 
 export const F1_LINE = "Every race, including the boring ones. Mercedes, through the good years and the others. Built F1Hub and hotlapdaily because the official app wasn't enough.";
+
+// Sketchfab CC licences require attribution. Fill in and it shows in the footer; leave author empty to hide.
+export const F1_MODEL_CREDIT = { title: "2026 Mercedes W17", author: "", href: "" }; // TODO: author name + model URL

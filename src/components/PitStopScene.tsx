@@ -1,7 +1,8 @@
 "use client";
 
-// Scroll-scrubbed 3D pit stop, scoped to the F1 card. Everything is primitives:
-// no model files, no logos. Sibling of ChessScene (same sticky-card + spacer setup).
+// Scroll-scrubbed 3D pit stop, scoped to the F1 card.
+// Car: /public/models/w17.glb (wheels pre-split into nodes wheel_LF/RF/LB/RB, meshopt-compressed).
+// Sibling of ChessScene (same sticky-card + spacer setup).
 
 import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
@@ -17,9 +18,10 @@ export const PIT_WORDS: { from: number; to: number; text: string; note?: boolean
   { from: 0.88, to: 1.01, text: "Clean stop." },
 ];
 
-const SILVER = "#C8CCD2";
 const TEAL = "#00A19C";
 const COMPOUNDS = ["#E10600", "#FFD600", "#F2F2F2", "#2DB85C", "#1E6BFF"]; // soft, medium, hard, inter, wet
+const MODEL_URL = "/models/w17.glb";
+const WHEEL_R = 0.33;
 
 /* ---- synthesized sounds ---- */
 type Sfx = "gun" | "thud" | "launch" | "pop";
@@ -81,7 +83,7 @@ function makeSfx() {
   };
 }
 
-export default function PitStopScene({ driverNumber }: { driverNumber: string }) {
+export default function PitStopScene() {
   const [sound, setSound] = useState(false);
   const soundRef = useRef(false);
   const sfxRef = useRef<ReturnType<typeof makeSfx> | null>(null);
@@ -115,7 +117,12 @@ export default function PitStopScene({ driverNumber }: { driverNumber: string })
     const cleanups: Array<() => void> = [];
 
     (async () => {
-      const THREE = await import("three");
+      const [THREE, { GLTFLoader }, { MeshoptDecoder }, { RoomEnvironment }] = await Promise.all([
+        import("three"),
+        import("three/addons/loaders/GLTFLoader.js"),
+        import("three/addons/libs/meshopt_decoder.module.js"),
+        import("three/addons/environments/RoomEnvironment.js"),
+      ]);
       if (disposed) return;
       gsap.registerPlugin(ScrollTrigger);
 
@@ -126,11 +133,19 @@ export default function PitStopScene({ driverNumber }: { driverNumber: string })
       renderer.shadowMap.enabled = true;
       renderer.shadowMap.type = THREE.PCFSoftShadowMap;
       renderer.toneMapping = THREE.ACESFilmicToneMapping;
-      renderer.toneMappingExposure = 0.95;
+      renderer.toneMappingExposure = 0.9;
 
       const scene = new THREE.Scene();
       scene.background = new THREE.Color("#0B0D12");
       scene.fog = new THREE.Fog("#0B0D12", 14, 40);
+      const pmrem = new THREE.PMREMGenerator(renderer);
+      const envTex = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+      scene.environment = envTex;
+      scene.environmentIntensity = 0.35;
+      cleanups.push(() => {
+        envTex.dispose();
+        pmrem.dispose();
+      });
       const camera = new THREE.PerspectiveCamera(36, 1, 0.1, 100);
 
       const size = () => {
@@ -146,8 +161,8 @@ export default function PitStopScene({ driverNumber }: { driverNumber: string })
       cleanups.push(() => ro.disconnect());
 
       // lights
-      scene.add(new THREE.HemisphereLight("#cfd6e0", "#05070a", 0.5));
-      const key = new THREE.SpotLight("#ffffff", 120, 40, Math.PI / 5, 0.6, 1.6);
+      scene.add(new THREE.HemisphereLight("#cfd6e0", "#05070a", 0.35));
+      const key = new THREE.SpotLight("#ffffff", 110, 40, Math.PI / 5, 0.6, 1.6);
       key.position.set(4, 9, 5);
       key.castShadow = true;
       key.shadow.mapSize.set(2048, 2048);
@@ -156,18 +171,13 @@ export default function PitStopScene({ driverNumber }: { driverNumber: string })
       const rim = new THREE.PointLight(TEAL, 40, 25, 1.6);
       rim.position.set(-6, 3, -4);
       scene.add(rim);
-      const fill = new THREE.PointLight("#ffffff", 18, 20, 1.8);
+      const fill = new THREE.PointLight("#ffffff", 16, 20, 1.8);
       fill.position.set(-3, 2, 6);
       scene.add(fill);
 
       // materials
       const mats = {
-        silver: new THREE.MeshStandardMaterial({ color: SILVER, roughness: 0.35, metalness: 0.75 }),
-        black: new THREE.MeshStandardMaterial({ color: "#121316", roughness: 0.5, metalness: 0.4 }),
         teal: new THREE.MeshStandardMaterial({ color: TEAL, roughness: 0.4, metalness: 0.3, emissive: TEAL, emissiveIntensity: 0.15 }),
-        tyre: new THREE.MeshStandardMaterial({ color: "#17181a", roughness: 0.8, metalness: 0.05 }),
-        worn: new THREE.MeshStandardMaterial({ color: "#2b2b2d", roughness: 0.98, metalness: 0 }),
-        rimM: new THREE.MeshStandardMaterial({ color: "#9aa0a8", roughness: 0.3, metalness: 0.9 }),
         asphalt: new THREE.MeshStandardMaterial({ color: "#15181d", roughness: 0.95 }),
         paint: new THREE.MeshStandardMaterial({ color: "#d9dde3", roughness: 0.8 }),
         streak: new THREE.MeshBasicMaterial({ color: "#ffffff", transparent: true, opacity: 0 }),
@@ -186,142 +196,105 @@ export default function PitStopScene({ driverNumber }: { driverNumber: string })
         p.receiveShadow = true;
         scene.add(p);
       };
-      line(0.08, 6, -1.6, 0);
-      line(0.08, 6, 1.6, 0);
-      line(3.2, 0.08, 0, 3);
-      line(3.2, 0.08, 0, -3);
-      line(0.5, 60, -4.2, 0, mats.teal);
+      line(0.08, 7, -1.7, 0);
+      line(0.08, 7, 1.7, 0);
+      line(3.4, 0.08, 0, 3.5);
+      line(3.4, 0.08, 0, -3.5);
+      line(0.5, 60, -4.4, 0, mats.teal);
 
-      // number decal
-      const numTex = (() => {
-        const c = document.createElement("canvas");
-        c.width = c.height = 256;
-        const g = c.getContext("2d")!;
-        g.clearRect(0, 0, 256, 256);
-        g.fillStyle = TEAL;
-        g.font = "900 190px Arial, Helvetica, sans-serif";
-        g.textAlign = "center";
-        g.textBaseline = "middle";
-        g.fillText(driverNumber, 128, 140);
-        const t = new THREE.CanvasTexture(c);
-        t.colorSpace = THREE.SRGBColorSpace;
-        return t;
-      })();
-      const numMat = new THREE.MeshBasicMaterial({ map: numTex, transparent: true });
-      cleanups.push(() => {
-        numTex.dispose();
-        numMat.dispose();
+      // ---- load the car ----
+      const loader = new GLTFLoader();
+      loader.setMeshoptDecoder(MeshoptDecoder);
+      const gltf = await loader.loadAsync(MODEL_URL);
+      if (disposed) return;
+      const model = gltf.scene;
+      model.traverse((o) => {
+        const m = o as InstanceType<typeof THREE.Mesh>;
+        if (m.isMesh) {
+          m.castShadow = true;
+          m.receiveShadow = true;
+          const mat = m.material as InstanceType<typeof THREE.MeshStandardMaterial>;
+          if (mat?.isMeshStandardMaterial) mat.envMapIntensity = 0.6;
+        }
       });
-
-      // wheel
-      const makeWheel = (band: string | null, worn = false) => {
-        const g = new THREE.Group();
-        const add = (geo: ConstructorParameters<typeof THREE.Mesh>[0], m: InstanceType<typeof THREE.Material>, rz = Math.PI / 2) => {
-          const mesh = new THREE.Mesh(geo, m);
-          mesh.rotation.z = rz;
-          mesh.castShadow = true;
-          g.add(mesh);
-          return mesh;
-        };
-        add(new THREE.CylinderGeometry(0.36, 0.36, 0.3, 48), worn ? mats.worn : mats.tyre);
-        if (band) {
-          const bm = new THREE.MeshStandardMaterial({ color: band, roughness: 0.6, emissive: band, emissiveIntensity: 0.2 });
-          cleanups.push(() => bm.dispose());
-          [0.151, -0.151].forEach((x) => {
-            const r = new THREE.Mesh(new THREE.TorusGeometry(0.3, 0.012, 8, 48), bm);
-            r.rotation.y = Math.PI / 2;
-            r.position.x = x;
-            g.add(r);
-          });
-        }
-        add(new THREE.CylinderGeometry(0.2, 0.2, 0.31, 24), mats.rimM);
-        for (let i = 0; i < 5; i++) {
-          const s = new THREE.Mesh(new THREE.BoxGeometry(0.32, 0.34, 0.035), mats.black);
-          s.rotation.x = (i * Math.PI * 2) / 5;
-          g.add(s);
-        }
-        add(new THREE.CylinderGeometry(0.06, 0.06, 0.36, 16), mats.black);
-        return g;
-      };
-
-      // car (forward = +z)
       const car = new THREE.Group();
-      const part = (geo: ConstructorParameters<typeof THREE.Mesh>[0], m: InstanceType<typeof THREE.Material>, x: number, y: number, z: number, rot?: [number, number, number]) => {
-        const mesh = new THREE.Mesh(geo, m);
-        mesh.position.set(x, y, z);
-        if (rot) mesh.rotation.set(...rot);
-        mesh.castShadow = true;
-        mesh.receiveShadow = true;
-        car.add(mesh);
-        return mesh;
-      };
-      part(new THREE.BoxGeometry(1.0, 0.16, 3.2), mats.black, 0, 0.3, 0); // floor
-      part(new THREE.BoxGeometry(0.56, 0.3, 1.5), mats.silver, 0, 0.5, 0.9); // monocoque
-      part(new THREE.ConeGeometry(0.26, 1.5, 4), mats.silver, 0, 0.42, 2.35, [Math.PI / 2, Math.PI / 4, 0]); // nose
-      part(new THREE.BoxGeometry(1.9, 0.04, 0.42), mats.black, 0, 0.14, 2.9); // front wing
-      part(new THREE.BoxGeometry(0.04, 0.22, 0.5), mats.black, -0.95, 0.24, 2.9);
-      part(new THREE.BoxGeometry(0.04, 0.22, 0.5), mats.black, 0.95, 0.24, 2.9);
-      part(new THREE.BoxGeometry(0.46, 0.34, 1.6), mats.silver, -0.6, 0.4, -0.3); // sidepods
-      part(new THREE.BoxGeometry(0.46, 0.34, 1.6), mats.silver, 0.6, 0.4, -0.3);
-      part(new THREE.BoxGeometry(0.46, 0.03, 1.6), mats.teal, -0.6, 0.575, -0.3); // teal accent
-      part(new THREE.BoxGeometry(0.46, 0.03, 1.6), mats.teal, 0.6, 0.575, -0.3);
-      part(new THREE.BoxGeometry(0.5, 0.44, 1.7), mats.silver, 0, 0.6, -0.7); // engine cover
-      part(new THREE.BoxGeometry(0.3, 0.26, 0.5), mats.black, 0, 0.95, 0.2); // airbox
-      part(new THREE.BoxGeometry(0.46, 0.22, 0.8), mats.black, 0, 0.55, 0.55); // cockpit
-      part(new THREE.TorusGeometry(0.28, 0.025, 8, 24), mats.black, 0, 0.86, 0.55, [Math.PI / 2, 0, 0]); // halo
-      part(new THREE.CylinderGeometry(0.025, 0.025, 0.3, 8), mats.black, 0, 0.72, 0.83);
-      part(new THREE.BoxGeometry(1.5, 0.05, 0.36), mats.black, 0, 0.92, -1.75); // rear wing
-      part(new THREE.BoxGeometry(0.04, 0.5, 0.45), mats.black, -0.75, 0.72, -1.75);
-      part(new THREE.BoxGeometry(0.04, 0.5, 0.45), mats.black, 0.75, 0.72, -1.75);
-      part(new THREE.BoxGeometry(0.06, 0.45, 0.2), mats.silver, 0, 0.7, -1.7);
-      const numPlane = new THREE.Mesh(new THREE.PlaneGeometry(0.44, 0.44), numMat);
-      numPlane.rotation.x = -Math.PI / 2;
-      numPlane.position.set(0, 0.66, 1.4);
-      car.add(numPlane);
-      [-0.26, 0.26].forEach((x) => {
-        const side = new THREE.Mesh(new THREE.PlaneGeometry(0.4, 0.4), numMat);
-        side.rotation.y = x > 0 ? Math.PI / 2 : -Math.PI / 2;
-        side.position.set(x * 1.001, 0.62, -0.7);
-        car.add(side);
-      });
-      // speed streaks (children, hidden until launch)
-      const streaks: InstanceType<typeof THREE.Mesh>[] = [];
-      for (let i = 0; i < 6; i++) {
-        const s = new THREE.Mesh(new THREE.BoxGeometry(0.03, 0.03, 6), mats.streak);
-        s.position.set(gsap.utils.random(-1.4, 1.4), gsap.utils.random(0.2, 1.1), -4);
-        s.scale.z = 0.01;
-        car.add(s);
-        streaks.push(s);
-      }
+      car.add(model);
       scene.add(car);
 
-      const HUBS: [number, number, number][] = [
-        [-0.82, 0.36, 1.35],
-        [0.82, 0.36, 1.35],
-        [-0.82, 0.36, -1.25],
-        [0.82, 0.36, -1.25],
-      ];
-      // worn wheels on the car as it arrives (children), plus loose copies that fly off
-      const oldOn = HUBS.map(([x, y, z]) => {
-        const w = makeWheel(null, true);
-        w.position.set(x, y, z);
-        car.add(w);
-        return w;
+      const body = model.getObjectByName("body") ?? model;
+      const wheelNames = ["wheel_LF", "wheel_RF", "wheel_LB", "wheel_RB"];
+      const oldOn = wheelNames.map((n) => body.getObjectByName(n) as InstanceType<typeof THREE.Group>);
+      if (oldOn.some((w) => !w)) throw new Error("w17.glb is missing wheel nodes");
+
+      // hub positions in car space
+      const HUBS = oldOn.map((w) => {
+        const v = new THREE.Vector3();
+        w.getWorldPosition(v);
+        car.worldToLocal(v);
+        return [v.x, v.y, v.z] as [number, number, number];
       });
-      const oldOff = HUBS.map(([x, y, z]) => {
-        const w = makeWheel(null, true);
-        w.position.set(x, y, z);
-        w.visible = false;
-        scene.add(w);
-        return w;
+      const bodyQuat = body.getWorldQuaternion(new THREE.Quaternion()); // wheel-local → world orientation
+
+      // wheel helpers
+      type Mat = InstanceType<typeof THREE.MeshStandardMaterial>;
+      const cloneWheel = (src: InstanceType<typeof THREE.Group>, tint: number | null) => {
+        const g = src.clone(true);
+        g.traverse((o) => {
+          const m = o as InstanceType<typeof THREE.Mesh>;
+          if (m.isMesh && tint != null) {
+            const mat = (m.material as Mat).clone();
+            mat.color.multiplyScalar(tint);
+            mat.roughness = Math.min(1, mat.roughness + 0.25);
+            m.material = mat;
+            cleanups.push(() => mat.dispose());
+          }
+        });
+        return g;
+      };
+      const addBand = (wheel: InstanceType<typeof THREE.Group>, color: string, halfWidth: number) => {
+        const bm = new THREE.MeshStandardMaterial({ color, roughness: 0.6, emissive: color, emissiveIntensity: 0.25 });
+        cleanups.push(() => bm.dispose());
+        [halfWidth, -halfWidth].forEach((x) => {
+          const r = new THREE.Mesh(new THREE.TorusGeometry(WHEEL_R * 0.78, 0.011, 8, 48), bm);
+          r.rotation.y = Math.PI / 2;
+          r.position.x = x;
+          wheel.add(r);
+        });
+      };
+      const halfWidths = oldOn.map((w) => {
+        const b = new THREE.Box3().setFromObject(w);
+        return (b.max.x - b.min.x) / 2 + 0.004;
       });
-      // new wheels fitted (children, hidden until the floating ones arrive)
-      const newOn = HUBS.map(([x, y, z]) => {
-        const w = makeWheel(COMPOUNDS[0]);
-        w.position.set(x, y, z);
-        w.visible = false;
-        car.add(w);
-        return w;
+
+      // fresh softs fitted (clean clones of the untouched originals; children of body, hidden until the floating ones arrive)
+      const newOn = oldOn.map((w, i) => {
+        const g = cloneWheel(w, null);
+        addBand(g, COMPOUNDS[0], halfWidths[i]);
+        g.position.copy(w.position);
+        g.visible = false;
+        body.add(g);
+        return g;
+      });
+      // loose copies of the worn tyres (scene-level, fly off)
+      const oldOff = oldOn.map((w) => {
+        const g = cloneWheel(w, 0.55);
+        g.quaternion.copy(bodyQuat);
+        g.visible = false;
+        scene.add(g);
+        return g;
+      });
+      // now darken the originals on the car
+      oldOn.forEach((w) => {
+        w.traverse((o) => {
+          const m = o as InstanceType<typeof THREE.Mesh>;
+          if (m.isMesh) {
+            const mat = (m.material as Mat).clone();
+            mat.color.multiplyScalar(0.55);
+            mat.roughness = 1;
+            m.material = mat;
+            cleanups.push(() => mat.dispose());
+          }
+        });
       });
       // gun flashes
       const flashes = HUBS.map(([x, , z]) => {
@@ -331,25 +304,36 @@ export default function PitStopScene({ driverNumber }: { driverNumber: string })
         return l;
       });
 
-      // floating sets: 5 compounds × 4 wheels
+      // floating sets: 5 compounds × 4 wheels (clean materials + band)
       type Float = { g: InstanceType<typeof THREE.Group>; phase: number; sp: number; home: { x: number; y: number; z: number } };
       const floats: Float[] = [];
-      COMPOUNDS.forEach((band, ci) => {
+      COMPOUNDS.forEach((band) => {
         for (let i = 0; i < 4; i++) {
-          const g = makeWheel(band);
-          const home = {
-            x: gsap.utils.random(-5.5, 5.5),
-            y: gsap.utils.random(1.2, 4.6),
-            z: gsap.utils.random(-5, 5),
-          };
+          const g = cloneWheel(newOn[i], null);
+          // newOn clones carry the band already; strip it and add the right colour
+          g.children.filter((c) => (c as InstanceType<typeof THREE.Mesh>).geometry?.type === "TorusGeometry").forEach((c) => g.remove(c));
+          addBand(g, band, halfWidths[i]);
+          g.visible = true;
+          const home = { x: gsap.utils.random(-5.5, 5.5), y: gsap.utils.random(1.2, 4.6), z: gsap.utils.random(-5, 5) };
           g.position.set(home.x, home.y, home.z);
-          g.rotation.set(gsap.utils.random(-1, 1), gsap.utils.random(-1, 1), gsap.utils.random(-1, 1));
+          g.quaternion.copy(bodyQuat);
+          g.rotateX(gsap.utils.random(-1, 1));
+          g.rotateY(gsap.utils.random(-1, 1));
           scene.add(g);
           floats.push({ g, phase: Math.random() * 6.28, sp: gsap.utils.random(0.5, 1.1), home });
-          void ci;
         }
       });
-      const softs = floats.slice(0, 4); // the soft set goes on
+      const softs = floats.slice(0, 4);
+
+      // speed streaks
+      const streaks: InstanceType<typeof THREE.Mesh>[] = [];
+      for (let i = 0; i < 6; i++) {
+        const s = new THREE.Mesh(new THREE.BoxGeometry(0.03, 0.03, 6), mats.streak);
+        s.position.set(gsap.utils.random(-1.4, 1.4), gsap.utils.random(0.2, 1.1), -4);
+        s.scale.z = 0.01;
+        car.add(s);
+        streaks.push(s);
+      }
 
       // camera rig
       const cam = { x: 7, y: 3.6, z: 8 },
@@ -362,40 +346,46 @@ export default function PitStopScene({ driverNumber }: { driverNumber: string })
       addEventListener("pointermove", onMove);
       cleanups.push(() => removeEventListener("pointermove", onMove));
 
-      // ---- master timeline (≈6.4 units) ----
+      // ---- master timeline ----
       car.position.z = 16;
       const tl = gsap.timeline({ paused: true });
       const sfx = (k: Sfx) => {
         if (soundRef.current && sfxRef.current) sfxRef.current.play(k);
       };
-      const wheelSpin = { v: 0 }; // rolling rotation for wheels on the car
+      const wheelSpin = { v: 0 };
+      const onJacks = 0.22;
 
       // 1.0–2.2 car arrives and stops in the box
       tl.to(car.position, { z: 0, duration: 1.2, ease: "power3.out" }, 1.0);
       tl.to(wheelSpin, { v: 14, duration: 1.2, ease: "power3.out" }, 1.0);
-      tl.to(cam, { x: 4.2, y: 1.6, z: 5.5, duration: 1.3, ease: "power2.inOut" }, 1.0).to(tgt, { x: 0, y: 0.5, z: 0.6, duration: 1.3, ease: "power2.inOut" }, 1.0);
+      tl.to(cam, { x: 4.4, y: 1.5, z: 5.8, duration: 1.3, ease: "power2.inOut" }, 1.0).to(tgt, { x: 0, y: 0.45, z: 0.6, duration: 1.3, ease: "power2.inOut" }, 1.0);
       tl.call(sfx, ["thud"], 2.2);
       // 2.2–2.45 jacks up
-      tl.to(car.position, { y: 0.24, duration: 0.25, ease: "power2.out" }, 2.2);
-      // 2.45–3.0 old wheels off (swap child → loose, then fly outward and topple)
+      tl.to(car.position, { y: onJacks, duration: 0.25, ease: "power2.out" }, 2.2);
+      // 2.45–3.1 worn tyres off
       oldOn.forEach((w, i) => {
         const off = oldOff[i];
-        tl.set(w, { visible: false }, 2.45 + i * 0.05);
-        tl.set(off, { visible: true }, 2.45 + i * 0.05);
-        tl.call(sfx, ["gun"], 2.45 + i * 0.05);
-        const dir = HUBS[i][0] > 0 ? 1 : -1;
-        tl.to(off.position, { x: HUBS[i][0] + dir * gsap.utils.random(2.2, 3.2), y: 0.36, z: HUBS[i][2] + gsap.utils.random(-1.5, 1.5), duration: 0.6, ease: "power2.out" }, 2.5 + i * 0.05)
-          .to(off.position, { y: 1.1, duration: 0.25, ease: "power2.out" }, 2.5 + i * 0.05)
-          .to(off.position, { y: 0.36, duration: 0.35, ease: "bounce.out" }, 2.75 + i * 0.05)
-          .to(off.rotation, { x: `+=${gsap.utils.random(4, 9)}`, z: dir * 1.45, duration: 0.9, ease: "power2.out" }, 2.5 + i * 0.05)
-          .to(off.position, { y: 0.16, duration: 0.3, ease: "power2.in" }, 3.1 + i * 0.05);
-        tl.to(flashes[i], { intensity: 60, duration: 0.06, yoyo: true, repeat: 1 }, 2.45 + i * 0.05);
+        const t0 = 2.45 + i * 0.05;
+        const [hx, hy, hz] = HUBS[i];
+        tl.set(off.position, { x: hx, y: hy + onJacks, z: hz }, t0);
+        tl.set(w, { visible: false }, t0);
+        tl.set(off, { visible: true }, t0);
+        tl.call(sfx, ["gun"], t0);
+        const dir = hx > 0 ? 1 : -1;
+        tl.to(off.position, { x: hx + dir * gsap.utils.random(2.2, 3.2), z: hz + gsap.utils.random(-1.5, 1.5), duration: 0.6, ease: "power2.out" }, t0 + 0.05)
+          .to(off.position, { y: 1.1, duration: 0.25, ease: "power2.out" }, t0 + 0.05)
+          .to(off.position, { y: WHEEL_R, duration: 0.35, ease: "bounce.out" }, t0 + 0.3)
+          .to(off.rotation, { x: `+=${gsap.utils.random(4, 9)}`, duration: 0.9, ease: "power2.out" }, t0 + 0.05)
+          .to(off.rotation, { z: dir * 1.45, duration: 0.5, ease: "power2.in" }, t0 + 0.55)
+          .to(off.position, { y: 0.17, duration: 0.3, ease: "power2.in" }, t0 + 0.65);
+        tl.to(flashes[i], { intensity: 60, duration: 0.06, yoyo: true, repeat: 1 }, t0);
       });
       // 2.9–3.8 softs fly on
       softs.forEach((f, i) => {
         const t0 = 2.9 + i * 0.16;
-        tl.to(f.g.position, { x: HUBS[i][0], y: HUBS[i][1] + 0.24, z: HUBS[i][2], duration: 0.45, ease: "power3.in" }, t0);
-        tl.to(f.g.rotation, { x: 0, y: 0, z: 0, duration: 0.45, ease: "power3.in" }, t0);
+        const [hx, hy, hz] = HUBS[i];
+        tl.to(f.g.position, { x: hx, y: hy + onJacks, z: hz, duration: 0.45, ease: "power3.in" }, t0);
+        tl.to(f.g.quaternion, { x: bodyQuat.x, y: bodyQuat.y, z: bodyQuat.z, w: bodyQuat.w, duration: 0.45, ease: "power3.in" }, t0);
         tl.set(f.g, { visible: false }, t0 + 0.45);
         tl.set(newOn[i], { visible: true }, t0 + 0.45);
         tl.call(sfx, ["gun"], t0 + 0.45);
@@ -408,14 +398,12 @@ export default function PitStopScene({ driverNumber }: { driverNumber: string })
       // 3.9–4.2 jacks down
       tl.call(sfx, ["thud"], 3.95);
       tl.to(car.position, { y: 0, duration: 0.3, ease: "bounce.out" }, 3.9);
-      tl.to(cam, { x: -5.5, y: 1.1, z: -1.5, duration: 1.0, ease: "power2.inOut" }, 3.6).to(tgt, { x: 0, y: 0.5, z: 0, duration: 1.0, ease: "power2.inOut" }, 3.6);
-      // 4.3–5.5 launch
+      tl.to(cam, { x: -5.8, y: 1.0, z: -1.2, duration: 1.0, ease: "power2.inOut" }, 3.6).to(tgt, { x: 0, y: 0.45, z: 0, duration: 1.0, ease: "power2.inOut" }, 3.6);
+      // 4.3–5.6 launch
       tl.call(sfx, ["launch"], 4.3);
       tl.to(car.position, { z: -46, duration: 1.3, ease: "power3.in" }, 4.3);
       tl.to(wheelSpin, { v: 60, duration: 1.3, ease: "power3.in" }, 4.3);
-      streaks.forEach((s, i) => {
-        tl.to(s.scale, { z: 1, duration: 0.3 }, 4.45 + i * 0.03);
-      });
+      streaks.forEach((s, i) => tl.to(s.scale, { z: 1, duration: 0.3 }, 4.45 + i * 0.03));
       tl.to(mats.streak, { opacity: 0.55, duration: 0.2 }, 4.45).to(mats.streak, { opacity: 0, duration: 0.5 }, 5.1);
       tl.to(tgt, { z: -8, duration: 0.9, ease: "power2.in" }, 4.3);
       // 5.3–6.4 settle on the empty box
@@ -451,8 +439,8 @@ export default function PitStopScene({ driverNumber }: { driverNumber: string })
         loose = Math.max(0, 1 - tl.time() / 2.4);
         floats.forEach((f) => {
           if (!f.g.visible) return;
-          f.g.rotation.y += 0.004 * loose;
-          f.g.rotation.x += 0.003 * loose;
+          f.g.rotateY(0.004 * loose);
+          f.g.rotateX(0.003 * loose);
           f.g.position.y += Math.sin(time * f.sp + f.phase) * 0.004 * loose;
         });
         const spin = wheelSpin.v;
@@ -493,6 +481,10 @@ export default function PitStopScene({ driverNumber }: { driverNumber: string })
         gsap.ticker.add(tick);
         cleanups.push(() => gsap.ticker.remove(tick));
         setUI(0);
+        if (st.progress > 0) {
+          tl.progress(st.progress);
+          setUI(st.progress);
+        }
       }
 
       cleanups.push(() => {
@@ -503,13 +495,13 @@ export default function PitStopScene({ driverNumber }: { driverNumber: string })
           if (mesh.geometry) mesh.geometry.dispose();
         });
       });
-    })();
+    })().catch((err) => console.error("[PitStopScene]", err));
 
     return () => {
       disposed = true;
       cleanups.forEach((fn) => fn());
     };
-  }, [driverNumber]);
+  }, []);
 
   return (
     <>

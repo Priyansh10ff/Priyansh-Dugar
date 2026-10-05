@@ -40,7 +40,7 @@ export default function OffTheClock({ chess, nextRace }: { chess: ChessStats; ne
 
         {/* F1: sticky like the others; its spacer gives the pit stop 300vh of scroll */}
         <div className="board-card pit-card" style={{ "--i": 1 } as React.CSSProperties}>
-          <PitStopScene driverNumber={DRIVER_NUMBER} />
+          <PitStopScene />
           <div className="board-foot">
             <h3>Formula 1</h3>
             <div>

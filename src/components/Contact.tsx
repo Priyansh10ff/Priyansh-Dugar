@@ -1,4 +1,5 @@
 import { PROFILE } from "@/data/projects";
+import { F1_MODEL_CREDIT } from "@/data/content";
 
 export default function Contact() {
   const EMAIL = PROFILE.email;
@@ -25,7 +26,18 @@ export default function Contact() {
         </div>
       </div>
       <footer>
-        <span>Made in Bengaluru · {new Date().getFullYear()}</span>
+        <span>
+          Made in Bengaluru · {new Date().getFullYear()}
+          {F1_MODEL_CREDIT.author && (
+            <>
+              {" · "}
+              <a href={F1_MODEL_CREDIT.href} target="_blank" rel="noopener noreferrer">
+                {F1_MODEL_CREDIT.title}
+              </a>{" "}
+              by {F1_MODEL_CREDIT.author}
+            </>
+          )}
+        </span>
         <nav>
           <a href={PROFILE.links.github} target="_blank" rel="noopener noreferrer">GitHub</a>
           <a href={PROFILE.links.linkedin} target="_blank" rel="noopener noreferrer">LinkedIn</a>
