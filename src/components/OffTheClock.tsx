@@ -1,9 +1,10 @@
 import { PROFILE } from "@/data/projects";
-import { F1_LINE, PUBLIC_PILLARS } from "@/data/content";
-import { fmt, type ChessStats } from "@/lib/stats";
+import { F1_LINE, PUBLIC_PILLARS, DRIVER_NUMBER } from "@/data/content";
+import { fmt, type ChessStats, type NextRace } from "@/lib/stats";
 import ChessScene from "./ChessScene";
+import PitStopScene from "./PitStopScene";
 
-export default function OffTheClock({ chess }: { chess: ChessStats }) {
+export default function OffTheClock({ chess, nextRace }: { chess: ChessStats; nextRace: NextRace }) {
   return (
     <>
       <section className="off-head" id="off" aria-label="Off the clock">
@@ -37,13 +38,29 @@ export default function OffTheClock({ chess }: { chess: ChessStats }) {
         </div>
         <div className="board-spacer" aria-hidden="true" />
 
-        <div
-          className="stack-card"
-          style={{ "--i": 1, "--c": "#B83A28", "--tc": "#EFEBE3", "--stitch": "#F2A93B" } as React.CSSProperties}
-        >
-          <h3>Formula 1</h3>
-          <p>{F1_LINE}</p>
+        {/* F1: sticky like the others; its spacer gives the pit stop 300vh of scroll */}
+        <div className="board-card pit-card" style={{ "--i": 1 } as React.CSSProperties}>
+          <PitStopScene driverNumber={DRIVER_NUMBER} />
+          <div className="board-foot">
+            <h3>Formula 1</h3>
+            <div>
+              <p>{F1_LINE}</p>
+              <div className="mini">
+                {nextRace ? (
+                  <span>
+                    Next: {nextRace.name.replace(" Grand Prix", " GP")}
+                    {nextRace.daysAway > 0 ? ` in ${nextRace.daysAway} day${nextRace.daysAway === 1 ? "" : "s"}` : " this weekend"}
+                  </span>
+                ) : (
+                  <span>Mercedes</span>
+                )}
+                <span>#{DRIVER_NUMBER}</span>
+              </div>
+            </div>
+          </div>
         </div>
+        <div className="board-spacer" aria-hidden="true" />
+
         <div
           className="stack-card"
           style={{ "--i": 2, "--c": "#F2A93B", "--tc": "#121A35", "--stitch": "#121A35" } as React.CSSProperties}

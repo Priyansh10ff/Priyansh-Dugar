@@ -204,6 +204,23 @@ html.has-thread, html.has-thread *{cursor:none !important}
   backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px); cursor:pointer}
 .board-sound:hover{background:rgba(210,174,104,.2)}
 .board-sound[aria-pressed="true"]{background:#D2AE68; color:#0B261D}
+
+/* F1 pit-stop card: same anatomy as the chess card, silver/teal on near-black */
+.pit-card{background:#0B0D12; color:#EFEBE3}
+.pit-card::after{border-color:#C8CCD2}
+.pit-words span{text-shadow:0 2px 30px rgba(0,0,0,.8)}
+.pit-words span.note{color:#00A19C}
+.pit-card .board-foot h3, .pit-card .board-foot p{text-shadow:0 2px 24px rgba(0,0,0,.85)}
+.pit-card .board-foot .mini span{border-color:#C8CCD2; background:rgba(11,13,18,.6)}
+.pit-bar{background:rgba(200,204,210,.22)} .pit-bar div{background:#C8CCD2}
+.pit-sound{border-color:#C8CCD2; background:rgba(11,13,18,.6); color:#EFEBE3}
+.pit-sound:hover{background:rgba(200,204,210,.18)}
+.pit-sound[aria-pressed="true"]{background:#C8CCD2; color:#0B0D12}
+.pit-clock{position:absolute; right:clamp(28px,4vw,64px); bottom:clamp(28px,4vw,64px); z-index:3; font-family:var(--display); font-weight:800;
+  font-variation-settings:"wdth" 76; font-size:clamp(40px,5vw,84px); line-height:.9; letter-spacing:-.04em; font-variant-numeric:tabular-nums;
+  color:#C8CCD2; text-shadow:0 2px 30px rgba(0,0,0,.8); pointer-events:none}
+.pit-clock span[data-done="1"]{color:#00A19C}
+@media (max-width:720px){.pit-clock{bottom:auto; top:calc(clamp(28px,4vw,64px) + 52px); font-size:36px}}
 @media (pointer:coarse), (prefers-reduced-motion:reduce){.board-spacer{height:8vh} .board-bar{display:none}}
 @media (max-width:720px){.board-foot{grid-template-columns:1fr; gap:14px} .board-words span{font-size:clamp(28px,8vw,48px)}}
 

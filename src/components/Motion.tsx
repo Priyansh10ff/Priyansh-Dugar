@@ -261,12 +261,14 @@ export default function Motion() {
         ease: "expo.out",
         scrollTrigger: { trigger: ".journey", start: "top 70%" },
       });
-      gsap.from(".board-card", {
-        y: 80,
-        opacity: 0,
-        duration: 1.1,
-        ease: "expo.out",
-        scrollTrigger: { trigger: ".board-card", start: "top 85%" },
+      gsap.utils.toArray<HTMLElement>(".board-card").forEach((card) => {
+        gsap.from(card, {
+          y: 80,
+          opacity: 0,
+          duration: 1.1,
+          ease: "expo.out",
+          scrollTrigger: { trigger: card, start: "top 85%" },
+        });
       });
 
       // ---- off the clock: stacking cards ----

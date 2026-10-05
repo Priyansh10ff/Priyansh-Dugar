@@ -186,3 +186,17 @@ export async function getMergedPRs(): Promise<MergedPR[]> {
       mergedAt: i.pull_request!.merged_at!,
     }));
 }
+
+/* ---------------- Jolpica (Ergast-compatible): next race ---------------- */
+
+export type NextRace = { name: string; circuit: string; country: string; date: string; daysAway: number } | null;
+
+export async function getNextRace(): Promise<NextRace> {
+  type R = { MRData?: { RaceTable?: { Races?: { raceName: string; date: string; time?: string; Circuit: { circuitName: string; Location: { country: string } } }[] } } };
+  const r = await getJSON<R>("https://api.jolpi.ca/ergast/f1/current/next.json");
+  const race = r?.MRData?.RaceTable?.Races?.[0];
+  if (!race) return null;
+  const when = new Date(`${race.date}T${race.time ?? "12:00:00Z"}`);
+  const daysAway = Math.max(0, Math.ceil((when.getTime() - Date.now()) / 86400000));
+  return { name: race.raceName, circuit: race.Circuit.circuitName, country: race.Circuit.Location.country, date: race.date, daysAway };
+}

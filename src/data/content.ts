@@ -73,4 +73,6 @@ export const OSS_FALLBACK: { repo: string; title: string; href: string; mergedAt
 // Chips on the "Building in public" card.
 export const PUBLIC_PILLARS = ["Startup journey", "F1", "Dev culture", "Bengaluru"];
 
-export const F1_LINE = "I watch every race, including the boring ones. Mercedes, through the good years and the other ones. Built F1Hub and hotlapdaily because the official app wasn't enough.";
+export const DRIVER_NUMBER = "63"; // TODO: 63 Russell or 12 Antonelli
+
+export const F1_LINE = "Every race, including the boring ones. Mercedes, through the good years and the others. Built F1Hub and hotlapdaily because the official app wasn't enough.";
