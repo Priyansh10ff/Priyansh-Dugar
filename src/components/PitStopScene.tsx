@@ -24,7 +24,7 @@ const MODEL_URL = "/models/w17.glb";
 const WHEEL_R = 0.33;
 
 /* ---- synthesized sounds ---- */
-type Sfx = "gun" | "thud" | "launch" | "pop";
+type Sfx = "gun" | "thud" | "launch" | "pop" | "engineIn";
 function makeSfx() {
   let ctx: AudioContext | null = null;
   const ensure = () => {
@@ -75,9 +75,31 @@ function makeSfx() {
         tone(c, 150, 60, 0.16, 0.4, t, "sine");
       }
       if (kind === "launch") {
-        tone(c, 90, 520, 0.9, 0.22, t, "sawtooth");
-        tone(c, 45, 260, 0.9, 0.18, t, "square");
-        noise(c, 0.7, "bandpass", 900, 0.25, t + 0.1);
+        // three up-shifts: each gear climbs, drops, climbs higher
+        const gears = [
+          [110, 520, 0.0, 0.32],
+          [260, 760, 0.3, 0.3],
+          [380, 1100, 0.58, 0.5],
+        ] as const;
+        gears.forEach(([f0, f1, dt, dur]) => {
+          tone(c, f0, f1, dur, 0.2, t + dt, "sawtooth");
+          tone(c, f0 / 2, f1 / 2, dur, 0.16, t + dt, "square");
+        });
+        noise(c, 0.9, "bandpass", 900, 0.22, t + 0.1);
+      }
+      if (kind === "engineIn") {
+        // arriving: high revs, three down-shifts, brakes, idle
+        const gears = [
+          [900, 620, 0.0, 0.3],
+          [760, 480, 0.3, 0.3],
+          [560, 170, 0.6, 0.5],
+        ] as const;
+        gears.forEach(([f0, f1, dt, dur]) => {
+          tone(c, f0, f1, dur, 0.18, t + dt, "sawtooth");
+          tone(c, f0 / 2, f1 / 2, dur, 0.14, t + dt, "square");
+        });
+        noise(c, 0.5, "highpass", 1800, 0.18, t + 0.55); // brakes
+        tone(c, 120, 95, 0.9, 0.08, t + 1.0, "sawtooth"); // idle
       }
     },
   };
@@ -219,18 +241,19 @@ export default function PitStopScene() {
       });
       const car = new THREE.Group();
       car.add(model);
+      car.rotation.y = Math.PI; // model nose points +z; the car travels toward -z
       scene.add(car);
+      car.updateMatrixWorld(true);
 
       const body = model.getObjectByName("body") ?? model;
       const wheelNames = ["wheel_LF", "wheel_RF", "wheel_LB", "wheel_RB"];
       const oldOn = wheelNames.map((n) => body.getObjectByName(n) as InstanceType<typeof THREE.Group>);
       if (oldOn.some((w) => !w)) throw new Error("w17.glb is missing wheel nodes");
 
-      // hub positions in car space
+      // hub positions in WORLD space with the car parked at the origin (used for loose tyres)
       const HUBS = oldOn.map((w) => {
         const v = new THREE.Vector3();
         w.getWorldPosition(v);
-        car.worldToLocal(v);
         return [v.x, v.y, v.z] as [number, number, number];
       });
       const bodyQuat = body.getWorldQuaternion(new THREE.Quaternion()); // wheel-local → world orientation
@@ -356,9 +379,10 @@ export default function PitStopScene() {
       const onJacks = 0.22;
 
       // 1.0–2.2 car arrives and stops in the box
+      tl.call(sfx, ["engineIn"], 1.0);
       tl.to(car.position, { z: 0, duration: 1.2, ease: "power3.out" }, 1.0);
       tl.to(wheelSpin, { v: 14, duration: 1.2, ease: "power3.out" }, 1.0);
-      tl.to(cam, { x: 4.4, y: 1.5, z: 5.8, duration: 1.3, ease: "power2.inOut" }, 1.0).to(tgt, { x: 0, y: 0.45, z: 0.6, duration: 1.3, ease: "power2.inOut" }, 1.0);
+      tl.to(cam, { x: 4.4, y: 1.4, z: -5.8, duration: 1.3, ease: "power2.inOut" }, 1.0).to(tgt, { x: 0, y: 0.45, z: -0.6, duration: 1.3, ease: "power2.inOut" }, 1.0);
       tl.call(sfx, ["thud"], 2.2);
       // 2.2–2.45 jacks up
       tl.to(car.position, { y: onJacks, duration: 0.25, ease: "power2.out" }, 2.2);
