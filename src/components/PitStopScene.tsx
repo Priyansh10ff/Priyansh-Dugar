@@ -173,18 +173,31 @@ export default function PitStopScene() {
       const camera = new THREE.PerspectiveCamera(36, 1, 0.1, 100);
 
       let rerender: (() => void) | null = null;
+      let lastW = 0,
+        lastH = 0,
+        sizeRaf = 0;
       const size = () => {
         const w = host.clientWidth || 1,
           h = host.clientHeight || 1;
+        if (w === lastW && h === lastH) return;
+        lastW = w;
+        lastH = h;
         renderer.setSize(w, h, false);
         camera.aspect = w / h;
         camera.updateProjectionMatrix();
         rerender?.();
       };
       size();
-      const ro = new ResizeObserver(size);
+      // debounce: mobile browsers fire resize storms while the address bar collapses
+      const ro = new ResizeObserver(() => {
+        cancelAnimationFrame(sizeRaf);
+        sizeRaf = requestAnimationFrame(size);
+      });
       ro.observe(host);
-      cleanups.push(() => ro.disconnect());
+      cleanups.push(() => {
+        ro.disconnect();
+        cancelAnimationFrame(sizeRaf);
+      });
 
       // lights
       scene.add(new THREE.HemisphereLight("#cfd6e0", "#05070a", 0.35));

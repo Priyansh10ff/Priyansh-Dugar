@@ -33,7 +33,7 @@ export default function Motion() {
       cleanups.push(() => gsap.ticker.remove(fn));
     };
 
-    const ctx: gsap.Context = gsap.context(() => {
+    const ctx = gsap.context(() => {
       // ---- smooth scroll ----
       const lenis = new Lenis({ lerp: 0.085, smoothWheel: true });
       lenis.on("scroll", ScrollTrigger.update);
@@ -82,37 +82,36 @@ export default function Motion() {
       });
 
       // ---- hero scroll: stitch the name together ----
-      // Created only after the intro has dropped the letters, so the scrub records the
-      // scattered positions as its start (otherwise, on slow devices, it can pin them off-screen).
-      const buildHeroScroll = () =>
-        ctx.add(() => {
-          const heroTl = gsap.timeline({
-            scrollTrigger: {
-              trigger: ".hero",
-              start: "top top",
-              end: "+=140%",
-              pin: true,
-              scrub: 1,
-              onUpdate: (self) => {
-                loose = 1 - self.progress;
-              },
-            },
-          });
-          heroTl
-            .to(patches, {
-              x: 0,
-              y: 0,
-              scale: 1,
-              rotation: (i) => +(patches[i].dataset.r ?? 0),
-              ease: "power3.inOut",
-              stagger: 0.05,
-              duration: 1,
-            })
-            .to(patches, { "--st": 1, ease: "none", stagger: 0.06, duration: 0.5 }, "-=0.25")
-            .to("#hint", { opacity: 0, duration: 0.2 }, 0)
-            .fromTo(".hero-line", { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.4 }, "-=0.3");
-          ScrollTrigger.refresh();
-        });
+      // The ScrollTrigger is created here, in document order (pins must be created top-to-bottom).
+      // Its tweens are added after the intro has dropped the letters, so their recorded start
+      // values are the scattered positions and nothing can pin them off-screen on slow devices.
+      const heroTl = gsap.timeline({
+        scrollTrigger: {
+          trigger: ".hero",
+          start: "top top",
+          end: "+=140%",
+          pin: true,
+          scrub: 1,
+          onUpdate: (self) => {
+            loose = 1 - self.progress;
+          },
+        },
+      });
+      const fillHeroScroll = () => {
+        heroTl
+          .to(patches, {
+            x: 0,
+            y: 0,
+            scale: 1,
+            rotation: (i) => +(patches[i].dataset.r ?? 0),
+            ease: "power3.inOut",
+            stagger: 0.05,
+            duration: 1,
+          })
+          .to(patches, { "--st": 1, ease: "none", stagger: 0.06, duration: 0.5 }, "-=0.25")
+          .to("#hint", { opacity: 0, duration: 0.2 }, 0)
+          .fromTo(".hero-line", { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.4 }, "-=0.3");
+      };
 
       // ---- loader -> intro ----
       const counter = { v: 0 };
@@ -122,7 +121,7 @@ export default function Motion() {
       const intro = gsap.timeline({
         onComplete: () => {
           if (loader) loader.style.display = "none";
-          buildHeroScroll();
+          fillHeroScroll();
           lenis.start();
           ScrollTrigger.refresh();
         },

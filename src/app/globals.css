@@ -180,9 +180,9 @@ html.has-thread, html.has-thread *{cursor:none !important}
 /* off the clock */
 .off-head{padding:0 5vw}
 .off-head .sec-h{margin-bottom:4vh}
-.board-card{position:sticky; top:calc(12vh + var(--i) * 26px); height:76vh; border-radius:18px; overflow:hidden; background:#12382C; color:#F2EADB;
+.board-card{position:sticky; top:calc(12svh + var(--i) * 26px); height:76vh; height:76svh; border-radius:18px; overflow:hidden; background:#12382C; color:#F2EADB;
   box-shadow:0 -20px 50px -30px rgba(0,0,0,.6); isolation:isolate; transform-origin:50% 0}
-.board-spacer{height:300vh}
+.board-spacer{height:300vh; height:300svh}
 .board-card::after{content:""; position:absolute; inset:14px; border:2px dashed #D2AE68; border-radius:10px; pointer-events:none; z-index:3}
 .board-gl{position:absolute; inset:0; width:100%; height:100%; display:block; z-index:0}
 .board-words{position:absolute; left:clamp(28px,4vw,64px); top:clamp(28px,4vw,64px); right:clamp(28px,4vw,64px); z-index:2; pointer-events:none}
@@ -221,11 +221,12 @@ html.has-thread, html.has-thread *{cursor:none !important}
   color:#C8CCD2; text-shadow:0 2px 30px rgba(0,0,0,.8); pointer-events:none}
 .pit-clock span[data-done="1"]{color:#00A19C}
 @media (max-width:720px){.pit-clock{bottom:auto; top:calc(clamp(28px,4vw,64px) + 52px); font-size:36px}}
-@media (pointer:coarse) and (max-width:767px), (prefers-reduced-motion:reduce){.board-spacer{height:8vh} .board-bar{display:none}}
+@media (pointer:coarse) and (max-width:767px), (prefers-reduced-motion:reduce){.board-spacer{height:6svh} .board-bar{display:none}}
+@media (max-width:767px){.board-card{height:70svh} .stack-card{min-height:62svh} .board-card, .stack-card{top:calc(10svh + var(--i) * 18px)}}
 @media (max-width:720px){.board-foot{grid-template-columns:1fr; gap:14px} .board-foot h3{font-size:clamp(44px,13vw,72px)} .board-foot p{font-size:16px} .board-words span{font-size:clamp(26px,7.5vw,44px); max-width:11ch}}
 
 .off{padding:0 5vw 12vh}
-.stack-card{position:sticky; top:calc(12vh + var(--i) * 26px); min-height:66vh; border-radius:18px; margin-bottom:8vh;
+.stack-card{position:sticky; top:calc(12svh + var(--i) * 26px); min-height:66vh; min-height:66svh; border-radius:18px; margin-bottom:8vh;
   background:var(--c); color:var(--tc); padding:clamp(28px,4vw,64px); display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:32px;
   align-items:end; transform-origin:50% 0; box-shadow:0 -20px 50px -30px rgba(0,0,0,.6)}
 .stack-card::after{content:""; position:absolute; inset:14px; border:2px dashed var(--stitch,var(--thread)); border-radius:10px; pointer-events:none}
