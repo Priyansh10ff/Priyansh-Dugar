@@ -109,7 +109,8 @@ export default function ChessScene() {
     if (!canvas || !wordsEl) return;
     const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
     const coarse = matchMedia("(pointer: coarse)").matches;
-    const staticMode = reduce || (coarse && innerWidth < 768);
+    const lite = coarse && innerWidth < 768; // phones: full scrub, lighter render
+    const staticMode = reduce;
     setIsStatic(staticMode); // phones + reduced motion: render the final frame once
     const wordEls = Array.from(wordsEl.querySelectorAll<HTMLElement>("span"));
 
@@ -123,9 +124,9 @@ export default function ChessScene() {
 
       const host = canvas.parentElement!;
       const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: "high-performance" });
-      renderer.setPixelRatio(Math.min(devicePixelRatio, staticMode ? 1.5 : 2));
+      renderer.setPixelRatio(lite ? 1 : Math.min(devicePixelRatio, 2));
       renderer.outputColorSpace = THREE.SRGBColorSpace;
-      renderer.shadowMap.enabled = true;
+      renderer.shadowMap.enabled = !lite;
       renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
       const scene = new THREE.Scene();
@@ -164,7 +165,7 @@ export default function ChessScene() {
       const sun = new THREE.DirectionalLight("#ffe6c0", 1.25);
       sun.position.set(5, 11, 6);
       sun.castShadow = true;
-      sun.shadow.mapSize.set(2048, 2048);
+      sun.shadow.mapSize.set(lite ? 1024 : 2048, lite ? 1024 : 2048);
       Object.assign(sun.shadow.camera, { left: -7, right: 7, top: 7, bottom: -7, near: 1, far: 30 });
       sun.shadow.bias = -0.0005;
       scene.add(sun);

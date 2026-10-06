@@ -228,9 +228,9 @@ html.has-thread, html.has-thread *{cursor:none !important}
   font-variation-settings:"wdth" 76; font-size:clamp(40px,5vw,84px); line-height:.9; letter-spacing:-.04em; font-variant-numeric:tabular-nums;
   color:#C8CCD2; text-shadow:0 2px 30px rgba(0,0,0,.8); pointer-events:none}
 .pit-clock span[data-done="1"]{color:#00A19C}
-@media (max-width:720px){.pit-clock{bottom:auto; top:calc(clamp(28px,4vw,64px) + 52px); font-size:36px}}
-@media (pointer:coarse) and (max-width:767px), (prefers-reduced-motion:reduce){.board-spacer{height:6svh} .board-bar{display:none}}
+@media (prefers-reduced-motion:reduce){.board-spacer{height:6svh} .board-bar{display:none}}
 @media (max-width:767px){.board-card{height:70svh} .stack-card{min-height:62svh} .board-card, .stack-card{top:calc(10svh + var(--i) * 18px)}}
+@media (max-width:720px){.board-sound{padding:7px 11px; font-size:13px} .pit-clock{top:calc(clamp(28px,4vw,64px) - 2px); right:auto; left:clamp(28px,4vw,64px); bottom:auto; font-size:32px} .board-words{top:calc(clamp(28px,4vw,64px) + 56px)}}
 @media (max-width:720px){.board-foot{grid-template-columns:1fr; gap:14px} .board-foot h3{font-size:clamp(44px,13vw,72px)} .board-foot p{font-size:16px} .board-words span{font-size:clamp(26px,7.5vw,44px); max-width:11ch}}
 
 .off{padding:0 5vw 12vh}

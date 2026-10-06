@@ -131,7 +131,8 @@ export default function PitStopScene() {
     if (!canvas || !wordsEl) return;
     const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
     const coarse = matchMedia("(pointer: coarse)").matches;
-    const staticMode = reduce || (coarse && innerWidth < 768);
+    const lite = coarse && innerWidth < 768; // phones: full scrub, lighter render
+    const staticMode = reduce;
     setIsStatic(staticMode);
     const wordEls = Array.from(wordsEl.querySelectorAll<HTMLElement>("span"));
     const bar = barRef.current;
@@ -152,9 +153,9 @@ export default function PitStopScene() {
 
       const host = canvas.parentElement!;
       const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: "high-performance" });
-      renderer.setPixelRatio(Math.min(devicePixelRatio, staticMode ? 1.5 : 2));
+      renderer.setPixelRatio(lite ? 1 : Math.min(devicePixelRatio, 2));
       renderer.outputColorSpace = THREE.SRGBColorSpace;
-      renderer.shadowMap.enabled = true;
+      renderer.shadowMap.enabled = !lite;
       renderer.shadowMap.type = THREE.PCFSoftShadowMap;
       renderer.toneMapping = THREE.ACESFilmicToneMapping;
       renderer.toneMappingExposure = 0.9;
@@ -204,7 +205,7 @@ export default function PitStopScene() {
       const key = new THREE.SpotLight("#ffffff", 110, 40, Math.PI / 5, 0.6, 1.6);
       key.position.set(4, 9, 5);
       key.castShadow = true;
-      key.shadow.mapSize.set(2048, 2048);
+      key.shadow.mapSize.set(lite ? 1024 : 2048, lite ? 1024 : 2048);
       key.shadow.bias = -0.0004;
       scene.add(key);
       const rim = new THREE.PointLight(TEAL, 40, 25, 1.6);
