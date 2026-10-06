@@ -136,7 +136,15 @@ export default function Motion() {
           },
         })
         .to(path, { strokeDashoffset: 0, duration: 1.8, ease: "power2.inOut" }, 0)
-        .to(".loader-count, .loader-note", { yPercent: 40, opacity: 0, duration: 0.4, ease: "power2.in" })
+        .to(".loader-count, .loader-note", { yPercent: 40, opacity: 0, duration: 0.4, ease: "power2.in" });
+      // optional "work in progress" interstitial (see WIP in data/content.ts)
+      if (document.querySelector(".loader-wip")) {
+        intro
+          .fromTo(".loader-wip", { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, "-=0.1")
+          .fromTo(".loader-wip .wip-tag", { "--st": 0 }, { "--st": 1, duration: 0.6, ease: "none" }, "<0.1")
+          .to(".loader-wip", { opacity: 0, y: -16, duration: 0.4, ease: "power2.in" }, "+=1.7");
+      }
+      intro
         .to(path, { opacity: 0, duration: 0.2 }, "<0.2")
         .to(".loader-half.top", { yPercent: -100, duration: 1, ease: "expo.inOut" }, "<")
         .to(".loader-half.bottom", { yPercent: 100, duration: 1, ease: "expo.inOut" }, "<")

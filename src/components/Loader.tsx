@@ -1,3 +1,5 @@
+import { WIP } from "@/data/content";
+
 export default function Loader() {
   return (
     <div className="loader" id="loader" aria-hidden="true">
@@ -10,6 +12,13 @@ export default function Loader() {
         <span id="count">0</span>
       </div>
       <div className="loader-note">Threading the needle</div>
+      {WIP.show && (
+        <div className="loader-wip">
+          <span className="wip-tag">{WIP.tag}</span>
+          <h2>{WIP.title}</h2>
+          <p>{WIP.body}</p>
+        </div>
+      )}
     </div>
   );
 }

@@ -79,3 +79,11 @@ export const F1_LINE = "Every race, including the boring ones. Mercedes, through
 
 // Sketchfab CC licences require attribution. Fill in and it shows in the footer; leave author empty to hide.
 export const F1_MODEL_CREDIT = { title: "2026 Mercedes W17", author: "", href: "" }; // TODO: author name + model URL
+
+// Loader interstitial shown before the site opens. Set `show` to false when the site is done.
+export const WIP = {
+  show: true,
+  tag: "Work in progress",
+  title: "Still stitching.",
+  body: "This site is under development. Changes land here as they're made, so some seams are visible.",
+};
