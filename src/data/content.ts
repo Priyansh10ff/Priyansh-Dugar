@@ -12,13 +12,6 @@ export type TimelineItem = {
 
 export const TIMELINE: TimelineItem[] = [
   {
-    when: "2026 →",
-    title: "Patchwork",
-    org: "Founder, solo",
-    body: "GitHub App that reads third-party API changelogs, finds the change that will break your code, and opens a PR with the fix. Closed beta.",
-    kind: "build",
-  },
-  {
     when: "2026",
     title: "OpenEnv India Hackathon, Round 2",
     org: "Hugging Face · OpenEnv",
@@ -35,19 +28,19 @@ export const TIMELINE: TimelineItem[] = [
     href: "https://huggingface.co/spaces/Priyansh10oooo/insurance-claims-env",
   },
   {
+    when: "2025 →",
+    title: "Open-source contributor, Prismor",
+    org: "prismor.dev",
+    body: "Runtime control plane for AI agents: intercepts tool calls, enforces policy, redacts secrets, keeps audit trails. Merged PRs are pulled live below.",
+    kind: "oss",
+    href: "https://github.com/Priyansh10ff/prismor",
+  },
+  {
     when: "2025", // TODO: year
     title: "Meta PyTorch Hackathon, finalist",
     org: "Meta · PyTorch",
     body: "Prompt Injection Defender. Top ~800 of 31,000+ teams.",
     kind: "hackathon",
-  },
-  {
-    when: "2025 →", // TODO: when you started contributing
-    title: "Open-source contributor",
-    org: "Prismor and others",
-    body: "Bug fixes and features on other people's codebases. Merged PRs are pulled live below.",
-    kind: "oss",
-    href: "https://prismor.dev",
   },
   {
     when: "2024 → 2028", // TODO: exact batch years
@@ -56,12 +49,19 @@ export const TIMELINE: TimelineItem[] = [
     body: "Moved to Bengaluru for it. Advanced DSA, DBMS, full-stack; most of the learning happens in the projects above.",
     kind: "education",
   },
+  {
+    when: "2021",
+    title: "First lines of code",
+    org: "2D browser games",
+    body: "Started with small JavaScript games: a T-Rex runner, a supply-drop mission, a Newton's cradle. Still on GitHub.",
+    kind: "build",
+    href: "https://github.com/Priyansh10ff/Trex10",
+  },
 ];
 
 export const NOW: { label: string; text: string }[] = [
-  { label: "Building", text: "Patchwork, and Interview Arena Pro (real company-specific interview rounds)." },
-  { label: "Learning", text: "Rebuilding an Uber-style ride app from scratch, no AI assistance, to learn the systems underneath." },
-  { label: "Daily", text: "One Codeforces problem, one LeetCode problem, one open-source contribution." },
+  { label: "Learning", text: "Every day. Going back over my own projects and making them better." },
+  { label: "Building", text: "Weft to production, Watchdog, Interview Arena." },
   { label: "Open to", text: "Internships in Bengaluru or remote, full-stack or AI engineering." },
 ];
 
@@ -75,7 +75,7 @@ export const PUBLIC_PILLARS = ["Startup journey", "F1", "Dev culture", "Bengalur
 
 export const DRIVER_NUMBER = "63"; // TODO: 63 Russell or 12 Antonelli
 
-export const F1_LINE = "Every race, including the boring ones. Mercedes, through the good years and the others. Built F1Hub and hotlapdaily because the official app wasn't enough.";
+export const F1_LINE = "Every race, including the boring ones. Mercedes, through the good years and the others. Built F1Hub because the official app wasn't enough.";
 
 // Sketchfab CC licences require attribution. Fill in and it shows in the footer; leave author empty to hide.
 export const F1_MODEL_CREDIT = { title: "2026 Mercedes W17", author: "", href: "" }; // TODO: author name + model URL

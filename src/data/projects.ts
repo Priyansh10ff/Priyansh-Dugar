@@ -33,12 +33,31 @@ export type Featured = {
 // Horizontal-scroll cards. Sizes/rotations/colors are the prototype's.
 export const FEATURED: Featured[] = [
   {
-    title: "Patchwork",
+    title: "Weft",
     blurb:
-      "A GitHub App that reads third-party API changelogs, spots the change that will break your code, and opens a pull request with the fix already written.",
-    tags: ["GitHub App", "Claude API", "Next.js", "Supabase", "Octokit"],
-    links: [{ label: "In private beta", href: "#contact" }],
+      "Multimodal ingestion pipeline: video, audio, images, PDFs and JSON become a timestamped, linked knowledge graph for RAG. Every answer traces back to the exact frame, page or second.",
+    tags: ["Python", "OpenCV", "ChromaDB", "RAG"],
+    links: [{ label: "GitHub", href: "https://github.com/Priyansh10ff/Weft" }],
     style: { "--w": "min(580px,80vw)", "--h": "66vh", "--r": "-2deg", "--c": "#F2A93B", "--tc": "#121A35", "--stitch": "#121A35" },
+  },
+  {
+    title: "Watchdog",
+    blurb:
+      "Uptime and incident monitoring for websites and APIs. Scheduled checks, failure-threshold incident detection, deduplicated email alerts and a public status page.",
+    tags: ["MongoDB", "Express", "React", "Node"],
+    links: [{ label: "GitHub", href: "https://github.com/Priyansh10ff/Watchdog" }],
+    style: { "--w": "min(460px,80vw)", "--h": "54vh", "--mt": "10vh", "--r": "2.5deg", "--c": "#EFEBE3", "--tc": "#121A35", "--stitch": "#B83A28" },
+  },
+  {
+    title: "Interview Arena",
+    blurb:
+      "Real company interview rounds with a live AI interviewer. Machine coding, LLD, system design, DSA and behavioural rounds modelled on 9 companies, with voice, a code editor and hire/no-hire scorecards.",
+    tags: ["React", "Firebase", "OpenRouter"],
+    links: [
+      { label: "Live", href: "https://scaler-web-dev-term-3-end-term-proj.vercel.app" },
+      { label: "GitHub", href: "https://github.com/Priyansh10ff/Interview-Arena" },
+    ],
+    style: { "--w": "min(520px,80vw)", "--h": "60vh", "--mt": "-8vh", "--r": "-1.5deg", "--c": "#2E4078", "--tc": "#EFEBE3" },
   },
   {
     title: "Argument Gym",
@@ -49,45 +68,25 @@ export const FEATURED: Featured[] = [
       { label: "Live", href: "https://argument-gym.vercel.app" },
       { label: "GitHub", href: "https://github.com/Priyansh10ff/Argument-Gym" },
     ],
-    style: { "--w": "min(460px,80vw)", "--h": "54vh", "--mt": "10vh", "--r": "2.5deg", "--c": "#EFEBE3", "--tc": "#121A35", "--stitch": "#B83A28" },
-  },
-  {
-    title: "Abhaya",
-    blurb:
-      "Open-source mobile app for women's safety in India: emergency guide, legal rights AI, timestamped evidence vault, FIR escalator, safety map and more.",
-    tags: ["Expo", "React Native", "Supabase", "Next.js"],
-    links: [
-      { label: "Site", href: "https://abhaya-web.vercel.app" },
-      { label: "Survey", href: "https://abhaya-survey.vercel.app" },
-    ],
-    style: { "--w": "min(520px,80vw)", "--h": "60vh", "--mt": "-8vh", "--r": "-1.5deg", "--c": "#2E4078", "--tc": "#EFEBE3" },
-  },
-  {
-    title: "VC Negotiation Arena",
-    blurb:
-      "OpenEnv RL environment where an LLM agent negotiates a term sheet against a founder with hidden preferences. Trained Qwen2.5-1.5B with GRPO. OpenEnv India Hackathon, Round 2.",
-    tags: ["OpenEnv", "FastAPI", "TRL / GRPO", "HF Spaces"],
-    links: [
-      { label: "Environment", href: "https://huggingface.co/spaces/Priyansh10oooo/vc-negotiation-env" },
-      { label: "Model", href: "https://huggingface.co/Priyansh10oooo/vc-negotiation-model" },
-      { label: "GitHub", href: "https://github.com/Priyansh10ff/vc-negotiation-env" },
-    ],
     style: { "--w": "min(440px,80vw)", "--h": "50vh", "--mt": "6vh", "--r": "3deg", "--c": "#B83A28", "--tc": "#EFEBE3" },
   },
   {
-    title: "Interview Arena",
+    title: "git-profile-switcher",
     blurb:
-      "Terminal-brutalist AI code interview trainer. Timed rounds, follow-up questions that actually probe, and a Pro track built around real company interview formats.",
-    tags: ["React", "Firebase", "Claude API"],
-    links: [{ label: "GitHub", href: "https://github.com/Priyansh10ff" }], // TODO: repo URL
+      "CLI that swaps Git identity and SSH key per command across multiple GitHub accounts. PowerShell, Bash and Nushell, one config.",
+    tags: ["PowerShell", "Bash", "Nushell"],
+    links: [
+      { label: "Site", href: "https://git-profile-switcher.vercel.app" },
+      { label: "GitHub", href: "https://github.com/Priyansh10ff/git-profile-switcher" },
+    ],
     style: { "--w": "min(500px,80vw)", "--h": "58vh", "--mt": "-4vh", "--r": "-2.5deg", "--c": "#121A35", "--tc": "#EFEBE3" },
   },
   {
-    title: "MirrorMind",
+    title: "Patchwork",
     blurb:
-      "An AI digital twin built from your own Twitter and Reddit history. Embeds everything you've ever posted, then answers in your voice.",
-    tags: ["Claude API", "OpenAI embeddings", "Supabase", "Next.js"],
-    links: [{ label: "GitHub", href: "https://github.com/Priyansh10ff" }], // TODO: repo URL
+      "A GitHub App that reads third-party API changelogs, spots the change that will break your code, and opens a pull request with the fix already written.",
+    tags: ["GitHub App", "Claude API", "Next.js", "Supabase", "Octokit"],
+    links: [{ label: "In private beta", href: "#contact" }],
     style: { "--w": "min(470px,80vw)", "--h": "52vh", "--mt": "8vh", "--r": "1.5deg", "--c": "#EFEBE3", "--tc": "#121A35", "--stitch": "#2E4078" },
   },
 ];
@@ -105,67 +104,11 @@ const GH = "https://github.com/Priyansh10ff";
 // Everything else. Links marked TODO point at the profile until you give me the repo.
 export const PROJECTS: Project[] = [
   {
-    title: "Prompt Injection Defender",
-    blurb: "Meta PyTorch hackathon finalist. Top ~800 of 31,000+ teams.",
-    tags: ["PyTorch", "LLM security"],
-    href: GH, // TODO
-    kind: "hackathon",
-  },
-  {
-    title: "Insurance Claims Env",
-    blurb: "OpenEnv Round 1. An RL environment for claims adjudication, deployed as a Docker Space.",
-    tags: ["OpenEnv", "FastAPI", "HF Spaces"],
-    href: "https://huggingface.co/spaces/Priyansh10oooo/insurance-claims-env",
-    kind: "hackathon",
-  },
-  {
-    title: "Jarvis",
-    blurb: "Voice-activated agent loop with vision-based screen control, running a local LLaMA on an RTX GPU.",
-    tags: ["Python", "LLaMA", "Vision"],
-    href: GH, // TODO
-    kind: "shipped",
-  },
-  {
-    title: "git-profile-switcher",
-    blurb: "CLI that swaps Git identity and SSH key per command across multiple GitHub accounts.",
-    tags: ["PowerShell", "Bash", "Nushell"],
-    href: GH, // TODO
-    kind: "open source",
-  },
-  {
-    title: "PixelPeel",
-    blurb: "Desktop background remover built on classical OpenCV (GrabCut, edge refine, color range). No ML dependency. Cross-platform CI.",
-    tags: ["Python", "OpenCV", "PyInstaller"],
-    href: "https://github.com/Priyansh10ff/pixelpeel",
-    kind: "shipped",
-  },
-  {
-    title: "F1Hub",
-    blurb: "F1 dashboard with live standings from the Jolpica API and a mathematical race predictor.",
-    tags: ["Next.js", "Jolpica API"],
-    href: GH, // TODO
-    kind: "shipped",
-  },
-  {
-    title: "hotlapdaily",
-    blurb: "Procedurally generated F1 track racer in the browser. A new circuit every day.",
-    tags: ["Next.js", "Canvas"],
-    href: GH, // TODO
-    kind: "shipped",
-  },
-  {
     title: "MeshRoom",
     blurb: "AI 3D asset generator. Prompt in, mesh out.",
     tags: ["AI", "3D"],
     href: GH, // TODO
     kind: "shipped",
-  },
-  {
-    title: "Prismor",
-    blurb: "Open-source contributions to prismor.dev.",
-    tags: ["Open source"],
-    href: "https://prismor.dev",
-    kind: "open source",
   },
   {
     title: "SQL Gym",
@@ -175,18 +118,18 @@ export const PROJECTS: Project[] = [
     kind: "shipped",
   },
   {
-    title: "Uber clone, from scratch",
-    blurb: "Web ride-hailing clone built without AI assistance, to actually learn the underlying systems.",
-    tags: ["MERN", "WebSockets", "Maps"],
-    href: GH, // TODO
-    kind: "wip",
-  },
-  {
     title: "SKILLSBANK",
     blurb: "Research ideation on skill systems for LLM agents and an overclogging degradation model.",
     tags: ["LLM agents", "Research"],
     href: GH, // TODO
     kind: "research",
+  },
+  {
+    title: "PixelPeel",
+    blurb: "Desktop background remover built on classical OpenCV (GrabCut, edge refine, color range). No ML dependency. Cross-platform CI.",
+    tags: ["Python", "OpenCV", "PyInstaller"],
+    href: GH, // TODO
+    kind: "shipped",
   },
 ];
 
