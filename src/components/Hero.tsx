@@ -12,8 +12,8 @@ const LETTERS: { ch: string; r: number; c: string; tc: string; thread?: boolean 
   { ch: "h", r: 2, c: "#2E4078", tc: "#EFEBE3" },
 ];
 
-// Cut-out image is 1140×1339; the thread lands at this point in its pixel space (near shoulder).
-export const STICKER = { w: 1140, h: 1339, land: { x: 178, y: 668 } };
+// Sticker image is 1172×1357; the thread lands at this point in its pixel space (near shoulder).
+export const STICKER = { w: 1172, h: 1357, land: { x: 230, y: 700 } };
 
 export default function Hero() {
   return (
@@ -42,7 +42,7 @@ export default function Hero() {
         </g>
       </svg>
 
-      {/* cut-out photo, no background */}
+      {/* sticker: cut-out photo with a chalk die-cut border */}
       <div className="sticker" id="sticker">
         <Image src="/me-sticker.webp" alt="Priyansh" width={STICKER.w} height={STICKER.h} priority className="sticker-img" id="sticker-img" />
         <div className="seam" id="sticker-seam" />
