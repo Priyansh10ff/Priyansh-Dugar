@@ -87,3 +87,10 @@ export const WIP = {
   title: "Still stitching.",
   body: "This site is under development. Changes land here as they're made, so some seams are visible.",
 };
+
+// Handwritten notes around the sticker in the hero (use \n for a line break). Three fit; the second hides on phones.
+export const HERO_NOTES = [
+  "same guy. started with\n2D games in 2021.",
+  "probably mid-game\non chess.com right now.",
+  "fun fact: the first thing\nI shipped was a T-Rex runner.",
+];

@@ -5,6 +5,7 @@
   --thread:#F2A93B; --pin:#B83A28; --muted:#B3BBD6;
   --display:var(--font-display), 'Arial Narrow', system-ui, sans-serif;
   --body:var(--font-body), system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --hand:var(--font-hand), 'Segoe Print', 'Bradley Hand', cursive;
   color-scheme:dark;
   box-sizing:border-box;
   padding-top:env(safe-area-inset-top,0px);
@@ -62,9 +63,9 @@ html.has-thread, html.has-thread *{cursor:none !important}
 @media (max-width:640px){.nav nav a:not(.pill){display:none} .nav{padding-bottom:14px; background:linear-gradient(var(--denim) 55%, rgba(34,48,90,0))}}
 
 /* hero */
-.hero{position:relative; min-height:100vh; min-height:100svh; display:flex; flex-direction:column; justify-content:center; padding:14vh 5vw 10vh; overflow:hidden}
-.name{margin:0; display:flex; flex-wrap:wrap; gap:clamp(4px,.9vw,14px); font-family:var(--display); font-weight:800;
-  font-size:clamp(68px,15.5vw,250px); line-height:1; letter-spacing:-.03em; font-variation-settings:"wdth" 82}
+.hero{position:relative; min-height:100vh; min-height:100svh; display:flex; flex-direction:column; justify-content:center; align-items:center; padding:14vh 5vw 10vh; overflow:hidden}
+.name{position:relative; z-index:2; margin:0; display:flex; flex-wrap:nowrap; justify-content:center; gap:clamp(4px,.9vw,14px); font-family:var(--display); font-weight:800;
+  font-size:clamp(68px,13.5vw,250px); line-height:1; letter-spacing:-.03em; font-variation-settings:"wdth" 82; transform-origin:0 0; will-change:transform}
 .patch{position:relative; display:inline-block; will-change:transform}
 .bob{display:inline-block; will-change:transform}
 .cloth{position:relative; display:block; padding:.04em .13em .1em; border-radius:.07em; background:var(--c); color:var(--tc);
@@ -72,9 +73,40 @@ html.has-thread, html.has-thread *{cursor:none !important}
 .cloth::after{content:""; position:absolute; inset:.06em; border:2px dashed var(--thread); border-radius:.05em;
   clip-path:inset(0 calc((1 - var(--st,0)) * 100%) 0 0)}
 .cloth.on-thread::after{border-color:var(--ink)}
-.hero-foot{display:flex; justify-content:space-between; align-items:flex-end; gap:32px; flex-wrap:wrap; margin-top:7vh}
-.hero-line{max-width:34ch; margin:0; font-size:clamp(18px,1.6vw,24px); line-height:1.45; opacity:0}
+.hero-foot{position:absolute; left:5vw; bottom:10vh; right:5vw; display:flex; justify-content:space-between; align-items:flex-end; gap:32px; flex-wrap:wrap; z-index:2; pointer-events:none}
+.hero-foot > *{pointer-events:auto}
+.hero-line{max-width:30ch; margin:0; font-size:clamp(18px,1.6vw,24px); line-height:1.45; opacity:0}
 .hint{margin:0; color:var(--muted); font-size:16px}
+
+/* hero: thread + sticker + notes */
+.hero-thread{position:absolute; inset:0; width:100%; height:100%; overflow:visible; pointer-events:none; z-index:3}
+.hero-thread path{fill:none; stroke:var(--thread); stroke-width:2.5; stroke-linecap:round}
+.hero-thread .needle{stroke:var(--chalk); stroke-width:2.6}
+.hero-thread .eye{fill:none; stroke:var(--ink); stroke-width:1}
+.sticker{position:absolute; right:6vw; bottom:0; height:72svh; aspect-ratio:1172/1357; z-index:1; transform:rotate(-3deg); transform-origin:50% 100%}
+.sticker-img{position:absolute; inset:0; width:100%; height:100%; object-fit:contain; object-position:bottom; display:block;
+  filter:drop-shadow(0 22px 30px rgba(0,0,0,.5)); clip-path:inset(0 0 100% 0)}
+.seam{position:absolute; left:18%; right:18%; top:var(--edge,0%); height:2px; background:var(--thread); opacity:var(--edge-o,0); box-shadow:0 0 18px var(--thread); z-index:3}
+.hn{position:absolute; z-index:4; font-family:var(--hand); font-weight:600; font-size:clamp(17px,1.5vw,24px); line-height:1.15; color:var(--chalk); opacity:0; white-space:nowrap; pointer-events:none}
+.hn svg{position:absolute; width:40px; height:40px; fill:none; stroke:var(--chalk); stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round}
+.hn-0{right:calc(6vw + 33vw); top:26vh; text-align:right; transform:rotate(-5deg)}
+.hn-0 svg{right:-40px; top:34px; transform:rotate(-20deg)}
+.hn-1{right:2vw; top:34vh; transform:rotate(5deg)}
+.hn-1 svg{left:-6px; top:56px; transform:rotate(60deg)}
+.hn-2{left:34vw; bottom:8vh; transform:rotate(-4deg)}
+.hn-2 svg{right:-44px; top:-6px; transform:rotate(-70deg)}
+@media (max-width:720px){
+  .name{font-size:clamp(40px,10.4vw,120px)}
+  .sticker{right:0; height:46svh}
+  .hn{white-space:normal; max-width:44vw; font-size:17px}
+  .hn-1{display:none}
+  .hn-0{right:auto; left:5vw; top:auto; bottom:40svh; text-align:left}
+  .hn-0 svg{right:-40px; top:6px; transform:rotate(-10deg)}
+  .hn-2{left:5vw; bottom:22svh}
+  .hn-2 svg{right:-40px; top:0; transform:rotate(-30deg)}
+  .hero-foot{bottom:auto; top:34svh; right:auto; flex-direction:column; align-items:flex-start}
+  .hero-line{max-width:26ch; font-size:16px}
+}
 
 /* manifesto */
 .manifesto{min-height:100vh; display:flex; align-items:center; padding:0 5vw}
@@ -262,5 +294,5 @@ footer nav{display:flex; gap:24px; flex-wrap:wrap}
 footer a{text-decoration:none} footer a:hover{color:var(--chalk)}
 
 @media (prefers-reduced-motion: reduce){
-  .hero-line{opacity:1} .manifesto .w{opacity:1} .cloth::after{clip-path:none}
+  .hero-line{opacity:1} .manifesto .w{opacity:1} .cloth::after{clip-path:none} .sticker-img{clip-path:none} .hn{opacity:1}
 }

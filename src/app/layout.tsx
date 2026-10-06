@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Bricolage_Grotesque, Instrument_Sans } from "next/font/google";
+import { Bricolage_Grotesque, Instrument_Sans, Caveat } from "next/font/google";
 import "./globals.css";
 
 const display = Bricolage_Grotesque({
@@ -7,6 +7,13 @@ const display = Bricolage_Grotesque({
   axes: ["opsz", "wdth"],
   weight: "variable",
   variable: "--font-display",
+  display: "swap",
+});
+
+const hand = Caveat({
+  subsets: ["latin"],
+  weight: ["500", "600"],
+  variable: "--font-hand",
   display: "swap",
 });
 
@@ -65,7 +72,7 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={`${display.variable} ${body.variable}`}>
+    <html lang="en" className={`${display.variable} ${body.variable} ${hand.variable}`}>
       <body>{children}</body>
     </html>
   );

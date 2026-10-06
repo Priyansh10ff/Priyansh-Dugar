@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Lenis from "lenis";
+import { STICKER } from "./Hero";
 
 export default function Motion() {
   useEffect(() => {
@@ -89,7 +90,7 @@ export default function Motion() {
         scrollTrigger: {
           trigger: ".hero",
           start: "top top",
-          end: "+=140%",
+          end: "+=320%",
           pin: true,
           scrub: 1,
           onUpdate: (self) => {
@@ -97,8 +98,48 @@ export default function Motion() {
           },
         },
       });
+      // geometry for the thread: the "h" after the name has slid to the top-left, and the sticker's landing point
+      const nameEl = document.getElementById("name")!;
+      const heroEl = document.querySelector<HTMLElement>(".hero")!;
+      const stickerEl = document.getElementById("sticker")!;
+      const threadPath = document.getElementById("hero-path") as SVGPathElement | null;
+      const threadTip = document.getElementById("hero-tip");
+      const stickerImg = document.getElementById("sticker-img") as HTMLElement | null;
+      const seam = document.getElementById("sticker-seam") as HTMLElement | null;
+      const nameMove = () => {
+        // where the name goes in phase 2: top-left, scaled down (tighter on phones)
+        const r = nameEl.getBoundingClientRect();
+        const h = heroEl.getBoundingClientRect();
+        const scale = innerWidth < 720 ? 0.82 : 0.6;
+        return { x: h.left + innerWidth * 0.05 - r.left, y: h.top + innerHeight * 0.12 - r.top, scale };
+      };
+      let threadLen = 1;
+      const buildThread = () => {
+        if (!threadPath) return;
+        const mv = nameMove();
+        const r = nameEl.getBoundingClientRect();
+        const h = heroEl.getBoundingClientRect();
+        // layout position of the "h" (offset*, so the letters' scatter transforms don't matter), then the
+        // name's own translate (mv.x, mv.y) and scale about its top-left
+        const last = patches[patches.length - 1];
+        const sx = r.left - h.left + mv.x + (last.offsetLeft + last.offsetWidth * 0.62) * mv.scale;
+        const sy = r.top - h.top + mv.y + (last.offsetTop + last.offsetHeight * 0.9) * mv.scale;
+        const sr = stickerEl.getBoundingClientRect();
+        const k = Math.min(sr.width / STICKER.w, sr.height / STICKER.h);
+        const w = STICKER.w * k, hh = STICKER.h * k;
+        const ox = sr.left - h.left + (sr.width - w) / 2, oy = sr.top - h.top + (sr.height - hh);
+        const hx = ox + STICKER.land.x * k, hy = oy + STICKER.land.y * k;
+        const H = h.height, W = h.width;
+        const d = `M${sx} ${sy} C ${sx - 20} ${sy + H * 0.45}, ${Math.min(sx, hx) - W * 0.2} ${H * 0.93}, ${hx - W * 0.16} ${H * 0.84} `
+          + `C ${hx - W * 0.1} ${H * 0.78}, ${hx - 110} ${hy + 10}, ${hx} ${hy}`;
+        threadPath.setAttribute("d", d);
+        threadLen = threadPath.getTotalLength();
+        gsap.set(threadPath, { strokeDasharray: threadLen, strokeDashoffset: threadLen });
+      };
       const fillHeroScroll = () => {
+        buildThread();
         heroTl
+          // 1. stitch the name, centred
           .to(patches, {
             x: 0,
             y: 0,
@@ -110,7 +151,42 @@ export default function Motion() {
           })
           .to(patches, { "--st": 1, ease: "none", stagger: 0.06, duration: 0.5 }, "-=0.25")
           .to("#hint", { opacity: 0, duration: 0.2 }, 0)
-          .fromTo(".hero-line", { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.4 }, "-=0.3");
+          // 2. the name slides to the top-left and shrinks
+          .to(nameEl, { x: () => nameMove().x, y: () => nameMove().y, scale: () => nameMove().scale, ease: "power3.inOut", duration: 0.8 }, 1.3)
+          // 3. the thread leaves the "h" and runs to the sticker
+          .to(threadPath, {
+            strokeDashoffset: 0,
+            ease: "none",
+            duration: 1.3,
+            onUpdate() {
+              if (!threadPath || !threadTip) return;
+              const p = 1 - (gsap.getProperty(threadPath, "strokeDashoffset") as number) / threadLen;
+              const pt = threadPath.getPointAtLength(p * threadLen);
+              const pt2 = threadPath.getPointAtLength(Math.max(0, p * threadLen - 4));
+              threadTip.setAttribute("transform", `translate(${pt.x} ${pt.y}) rotate(${(Math.atan2(pt.y - pt2.y, pt.x - pt2.x) * 180) / Math.PI})`);
+            },
+          }, 1.7)
+          // 4. the sticker reveals top → bottom as the needle lands
+          .fromTo(stickerImg, { clipPath: "inset(0 0 100% 0)" }, {
+            clipPath: "inset(0 0 0% 0)",
+            ease: "none",
+            duration: 1.0,
+            onUpdate() {
+              if (!seam) return;
+              const k = this.progress();
+              seam.style.setProperty("--edge", (k * 100).toFixed(2) + "%");
+              seam.style.setProperty("--edge-o", k < 0.98 ? Math.min(1, k * 6).toFixed(2) : "0");
+            },
+          }, 3.0)
+          .fromTo(".hero-line", { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.4 }, 3.2)
+          // 5. notes pop in
+          .fromTo("#hn-0", { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: 0.25 }, 3.4)
+          .fromTo("#hn-1", { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: 0.25 }, 3.7)
+          .fromTo("#hn-2", { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: 0.25 }, 3.95)
+          .to({}, { duration: 0.3 });
+        // keep the thread's geometry correct after resizes
+        ScrollTrigger.addEventListener("refreshInit", buildThread);
+        cleanups.push(() => ScrollTrigger.removeEventListener("refreshInit", buildThread));
       };
 
       // ---- loader -> intro ----
