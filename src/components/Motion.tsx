@@ -226,38 +226,6 @@ export default function Motion() {
         .to(".loader-half.bottom", { yPercent: 100, duration: 1, ease: "expo.inOut" }, "<")
         .to(patches, { y: (i) => scatter[i].y, duration: 1.4, ease: "elastic.out(1, 0.55)", stagger: 0.06 }, "<0.35");
 
-      // ---- manifesto: words get sewn ----
-      {
-        const manSec = document.querySelector<HTMLElement>(".manifesto");
-        const words = gsap.utils.toArray<HTMLElement>("#manifesto .w");
-        const ndl = document.getElementById("man-needle");
-        if (manSec && words.length) {
-          const manTl = gsap.timeline({
-            scrollTrigger: { trigger: manSec, start: "top top", end: "+=180%", pin: true, scrub: 0.5 },
-          });
-          words.forEach((w, i) => {
-            const line = w.querySelector("i");
-            manTl.to(line, {
-              scaleX: 1,
-              duration: 1,
-              ease: "none",
-              onStart: () => {
-                w.classList.add("on");
-                if (ndl) ndl.style.opacity = "1";
-              },
-              onReverseComplete: () => w.classList.remove("on"),
-              onUpdate() {
-                if (!ndl) return;
-                const r = w.getBoundingClientRect(), sr = manSec.getBoundingClientRect(), k = this.progress();
-                ndl.style.left = r.left - sr.left + r.width * k - 12 + "px";
-                ndl.style.top = r.bottom - sr.top - 2 + "px";
-              },
-            }, i * 0.9);
-          });
-          manTl.to(ndl, { opacity: 0, duration: 0.6 });
-        }
-      }
-
       // ---- work: horizontal scroll with velocity skew ----
       const track = document.getElementById("track")!;
       const cards = gsap.utils.toArray<HTMLElement>(".card");

@@ -81,14 +81,6 @@ export const FEATURED: Featured[] = [
     ],
     style: { "--w": "min(500px,80vw)", "--h": "58vh", "--mt": "-4vh", "--r": "-2.5deg", "--c": "#121A35", "--tc": "#EFEBE3" },
   },
-  {
-    title: "Patchwork",
-    blurb:
-      "A GitHub App that reads third-party API changelogs, spots the change that will break your code, and opens a pull request with the fix already written.",
-    tags: ["GitHub App", "Claude API", "Next.js", "Supabase", "Octokit"],
-    links: [{ label: "In private beta", href: "#contact" }],
-    style: { "--w": "min(470px,80vw)", "--h": "52vh", "--mt": "8vh", "--r": "1.5deg", "--c": "#EFEBE3", "--tc": "#121A35", "--stitch": "#2E4078" },
-  },
 ];
 
 export type Project = {

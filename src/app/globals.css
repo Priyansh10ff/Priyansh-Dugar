@@ -108,17 +108,6 @@ html.has-thread, html.has-thread *{cursor:none !important}
   .hero-line{max-width:26ch; font-size:16px}
 }
 
-/* manifesto */
-.manifesto{position:relative; min-height:100vh; display:flex; align-items:center; padding:0 5vw}
-.manifesto p{margin:0; max-width:22ch; font-family:var(--display); font-weight:500; font-variation-settings:"wdth" 90;
-  font-size:clamp(34px,5.4vw,84px); line-height:1.12; letter-spacing:-.02em}
-.manifesto .w{position:relative; display:inline-block; margin-right:.22em; color:rgba(239,235,227,.18); transition:color .25s}
-.manifesto .w i{position:absolute; left:0; right:0; bottom:-.03em; height:3px; transform:scaleX(0); transform-origin:0 50%;
-  background:repeating-linear-gradient(90deg, var(--thread) 0 .14em, transparent .14em .3em)}
-.manifesto .w.on{color:var(--chalk)}
-.manifesto .w.hl.on{color:var(--thread)}
-.man-needle{position:absolute; width:24px; height:4px; border-radius:2px; background:var(--chalk); opacity:0; pointer-events:none; z-index:3}
-
 /* work */
 .work{position:relative; height:100vh; overflow:hidden}
 .track{display:flex; align-items:center; gap:7vw; height:100%; padding:0 8vw 0 5vw; width:max-content}
@@ -316,5 +305,5 @@ footer nav{display:flex; gap:24px; flex-wrap:wrap}
 footer a{text-decoration:none} footer a:hover{color:var(--chalk)}
 
 @media (prefers-reduced-motion: reduce){
-  .hero-line{opacity:1} .manifesto .w{color:var(--chalk)} .manifesto .w.hl{color:var(--thread)} .cloth::after{clip-path:none} .sticker-img{clip-path:none} .hn{opacity:1} .stat .v{opacity:1}
+  .hero-line{opacity:1} .cloth::after{clip-path:none} .sticker-img{clip-path:none} .hn{opacity:1} .stat .v{opacity:1}
 }

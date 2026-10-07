@@ -28,7 +28,7 @@ export const TIMELINE: TimelineItem[] = [
     href: "https://huggingface.co/spaces/Priyansh10oooo/insurance-claims-env",
   },
   {
-    when: "2025 →",
+    when: "2025 → now",
     title: "Open-source contributor, Prismor",
     org: "prismor.dev",
     body: "Runtime control plane for AI agents: intercepts tool calls, enforces policy, redacts secrets, keeps audit trails. Merged PRs are pulled live below.",
@@ -43,7 +43,7 @@ export const TIMELINE: TimelineItem[] = [
     kind: "hackathon",
   },
   {
-    when: "2024 → 2028", // TODO: exact batch years
+    when: "2025 → 2029",
     title: "B.Tech, Computer Science",
     org: "Scaler School of Technology, Bengaluru",
     body: "Moved to Bengaluru for it. Advanced DSA, DBMS, full-stack; most of the learning happens in the projects above.",
