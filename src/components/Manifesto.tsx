@@ -1,13 +1,12 @@
-const TEXT =
-  "Most software breaks quietly. An API changes, a field disappears, and someone finds out at 2am. I build the tools that notice first, and the patches that land before anyone wakes up.";
-const HIGHLIGHT = new Set(["notice", "first,", "patches"]);
+import { MANIFESTO } from "@/data/content";
 
 export default function Manifesto() {
+  const hl = new Set(MANIFESTO.highlight);
   return (
-    <section className="manifesto" aria-label="About">
+    <section className="manifesto" aria-label="In short">
       <p id="manifesto">
-        {TEXT.split(/\s+/).map((w, i) => (
-          <span className={`w${HIGHLIGHT.has(w) ? " hl" : ""}`} key={i}>
+        {MANIFESTO.text.split(/\s+/).map((w, i) => (
+          <span className={`w${hl.has(w.replace(/[.,;:]$/, "")) ? " hl" : ""}`} key={i}>
             {w}
             <i aria-hidden="true" />
           </span>

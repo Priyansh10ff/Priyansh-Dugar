@@ -1,6 +1,7 @@
 import Loader from "@/components/Loader";
 import Nav from "@/components/Nav";
 import Hero from "@/components/Hero";
+import Manifesto from "@/components/Manifesto";
 import Work from "@/components/Work";
 import Stats from "@/components/Stats";
 import Projects from "@/components/Projects";
@@ -24,6 +25,7 @@ export default async function Page() {
       <Nav />
       <main>
         <Hero />
+        <Manifesto />
         <Work />
         <Stats stats={stats} />
         <Projects />

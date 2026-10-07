@@ -112,3 +112,9 @@ export const ABOUT = {
   ],
   pull: "Build the thing that notices first.",
 };
+
+// Sewn-in statement after the hero. Specific over slogan. `highlight` words turn thread-orange (punctuation ignored).
+export const MANIFESTO = {
+  text: "Nineteen, in Bengaluru. Started with a T-Rex runner in 2021 and kept going: RAG pipelines, uptime monitors, an interview simulator. Most of it built between lectures, because something I used annoyed me enough to rebuild it.",
+  highlight: ["T-Rex", "annoyed", "rebuild"],
+};
