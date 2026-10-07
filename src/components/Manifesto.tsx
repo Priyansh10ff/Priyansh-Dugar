@@ -9,9 +9,11 @@ export default function Manifesto() {
         {TEXT.split(/\s+/).map((w, i) => (
           <span className={`w${HIGHLIGHT.has(w) ? " hl" : ""}`} key={i}>
             {w}
+            <i aria-hidden="true" />
           </span>
         ))}
       </p>
+      <div className="man-needle" id="man-needle" aria-hidden="true" />
     </section>
   );
 }

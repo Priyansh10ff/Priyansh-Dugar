@@ -12,7 +12,7 @@ export default function Work() {
         </div>
 
         {FEATURED.map((c) => (
-          <article className="card" key={c.title}>
+          <article className="card" key={c.title} data-cur="tag" data-label="open ↗">
             <div className="card-in" style={c.style as React.CSSProperties}>
               <div>
                 <h3>{c.title}</h3>

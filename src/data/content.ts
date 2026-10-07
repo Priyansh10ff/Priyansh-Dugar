@@ -94,3 +94,21 @@ export const HERO_NOTES = [
   "probably mid-game\non chess.com right now.",
   "fun fact: the first thing\nI shipped was a T-Rex runner.",
 ];
+
+// About beat. Placeholder copy in Priyansh's voice; rewrite freely. One sentence per line.
+export const ABOUT = {
+  label: "about, honestly",
+  lines: [
+    "I am nineteen, in Bengaluru, and most of what I know I learned by shipping something slightly too ambitious and then fixing it.",
+    "I like tools that notice problems before people do.",
+    "I play the London because I would rather understand one opening than memorise ten.",
+    "I am looking for a team that lets me build real things and tells me when they are wrong.",
+  ],
+  facts: [
+    { k: "Based", v: "Bengaluru, from [hometown]" }, // TODO
+    { k: "Studying", v: "CS at Scaler School of Technology" },
+    { k: "Working on", v: "Weft, Watchdog, Interview Arena" },
+    { k: "Open to", v: "internships, full-stack or AI" },
+  ],
+  pull: "Build the thing that notices first.",
+};

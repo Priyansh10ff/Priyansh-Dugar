@@ -13,7 +13,7 @@ export default function OffTheClock({ chess, nextRace }: { chess: ChessStats; ne
 
       <section className="off" aria-label="Off the clock cards">
         {/* Chess: sticky like the other cards; the spacer below gives the 3D game 300vh of scroll to play in */}
-        <div className="board-card" style={{ "--i": 0 } as React.CSSProperties}>
+        <div className="board-card" style={{ "--i": 0 } as React.CSSProperties} data-cur="glyph" data-glyph="♟">
           <ChessScene />
           <div className="board-foot">
             <h3>Chess</h3>
@@ -39,7 +39,7 @@ export default function OffTheClock({ chess, nextRace }: { chess: ChessStats; ne
         <div className="board-spacer" aria-hidden="true" />
 
         {/* F1: sticky like the others; its spacer gives the pit stop 300vh of scroll */}
-        <div className="board-card pit-card" style={{ "--i": 1 } as React.CSSProperties}>
+        <div className="board-card pit-card" style={{ "--i": 1 } as React.CSSProperties} data-cur="glyph" data-glyph="◎">
           <PitStopScene />
           <div className="board-foot">
             <h3>Formula 1</h3>

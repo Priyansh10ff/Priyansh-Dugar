@@ -7,6 +7,7 @@ import Stats from "@/components/Stats";
 import Projects from "@/components/Projects";
 import OpenSource from "@/components/OpenSource";
 import Journey from "@/components/Journey";
+import About from "@/components/About";
 import OffTheClock from "@/components/OffTheClock";
 import Contact from "@/components/Contact";
 import Motion from "@/components/Motion";
@@ -30,6 +31,7 @@ export default async function Page() {
         <Projects />
         <OpenSource prs={prs} />
         <Journey />
+        <About />
         <OffTheClock chess={stats.chess} nextRace={nextRace} />
         <Contact />
       </main>

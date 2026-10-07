@@ -226,13 +226,37 @@ export default function Motion() {
         .to(".loader-half.bottom", { yPercent: 100, duration: 1, ease: "expo.inOut" }, "<")
         .to(patches, { y: (i) => scatter[i].y, duration: 1.4, ease: "elastic.out(1, 0.55)", stagger: 0.06 }, "<0.35");
 
-      // ---- manifesto: words light up ----
-      gsap.to("#manifesto .w", {
-        opacity: 1,
-        ease: "none",
-        stagger: 0.12,
-        scrollTrigger: { trigger: ".manifesto", start: "top top", end: "+=160%", pin: true, scrub: 0.6 },
-      });
+      // ---- manifesto: words get sewn ----
+      {
+        const manSec = document.querySelector<HTMLElement>(".manifesto");
+        const words = gsap.utils.toArray<HTMLElement>("#manifesto .w");
+        const ndl = document.getElementById("man-needle");
+        if (manSec && words.length) {
+          const manTl = gsap.timeline({
+            scrollTrigger: { trigger: manSec, start: "top top", end: "+=180%", pin: true, scrub: 0.5 },
+          });
+          words.forEach((w, i) => {
+            const line = w.querySelector("i");
+            manTl.to(line, {
+              scaleX: 1,
+              duration: 1,
+              ease: "none",
+              onStart: () => {
+                w.classList.add("on");
+                if (ndl) ndl.style.opacity = "1";
+              },
+              onReverseComplete: () => w.classList.remove("on"),
+              onUpdate() {
+                if (!ndl) return;
+                const r = w.getBoundingClientRect(), sr = manSec.getBoundingClientRect(), k = this.progress();
+                ndl.style.left = r.left - sr.left + r.width * k - 12 + "px";
+                ndl.style.top = r.bottom - sr.top - 2 + "px";
+              },
+            }, i * 0.9);
+          });
+          manTl.to(ndl, { opacity: 0, duration: 0.6 });
+        }
+      }
 
       // ---- work: horizontal scroll with velocity skew ----
       const track = document.getElementById("track")!;
@@ -284,28 +308,42 @@ export default function Motion() {
         );
       });
 
-      // ---- stats: patches drop in, numbers count up ----
-      gsap.from(".stat", {
-        y: 60,
-        opacity: 0,
-        rotation: (i) => (i % 2 ? 6 : -6),
-        duration: 1,
-        ease: "expo.out",
-        stagger: 0.08,
-        scrollTrigger: { trigger: ".stats", start: "top 75%" },
-      });
-      document.querySelectorAll<HTMLElement>(".stat .v[data-n]").forEach((el) => {
-        const target = Number(el.dataset.n);
-        if (!Number.isFinite(target)) return;
-        const o = { v: 0 };
+      // ---- stats: patch drops in, border sews itself, then the number counts ----
+      gsap.utils.toArray<HTMLElement>(".stat").forEach((stat, i) => {
+        const rect = stat.querySelector<SVGRectElement>(".stitch rect");
+        const v = stat.querySelector<HTMLElement>(".v");
+        const target = Number(v?.dataset.n);
         const f = new Intl.NumberFormat("en-IN");
-        gsap.to(o, {
-          v: target,
-          duration: 1.6,
-          ease: "power3.out",
-          onUpdate: () => (el.textContent = f.format(Math.round(o.v))),
-          scrollTrigger: { trigger: el, start: "top 85%" },
+        const o = { v: 0 };
+        let len = 0;
+        if (rect) {
+          const b = rect.getBBox();
+          len = 2 * (b.width + b.height);
+          gsap.set(rect, { strokeDasharray: len, strokeDashoffset: len });
+        }
+        const tl = gsap.timeline({
+          scrollTrigger: {
+            trigger: stat,
+            start: "top 85%",
+            toggleActions: "play none none reverse",
+            // the rect is sized by CSS; re-measure the perimeter after layout settles (before it has played)
+            onRefresh: () => {
+              if (!rect || tl.progress() > 0) return;
+              const b = rect.getBBox();
+              len = 2 * (b.width + b.height);
+              gsap.set(rect, { strokeDasharray: len, strokeDashoffset: len });
+            },
+          },
+          delay: i * 0.1,
         });
+        tl.from(stat, { y: 60, opacity: 0, rotation: i % 2 ? 6 : -6, duration: 0.9, ease: "expo.out" });
+        if (rect) tl.to(rect, { strokeDashoffset: 0, duration: 1.0, ease: "power2.inOut" }, "-=0.5").set(rect, { strokeDasharray: "6 6" });
+        if (v) {
+          tl.to(v, { opacity: 1, duration: 0.2 }, "-=0.15");
+          if (Number.isFinite(target)) {
+            tl.to(o, { v: target, duration: 1.2, ease: "power3.out", onUpdate: () => (v.textContent = f.format(Math.round(o.v))) }, "<");
+          }
+        }
       });
       gsap.from(".heat i", {
         scale: 0,
@@ -361,6 +399,35 @@ export default function Motion() {
           scrollTrigger: { trigger: card, start: "top 85%" },
         });
       });
+
+      // ---- about: lines rise, facts slide, pull quote lands ----
+      if (document.querySelector(".about")) {
+        gsap.from(".about-body .l span", {
+          yPercent: 110,
+          duration: 1,
+          ease: "expo.out",
+          stagger: 0.12,
+          scrollTrigger: { trigger: ".about-body", start: "top 75%" },
+        });
+        gsap.from(".about-facts div", {
+          x: -20,
+          opacity: 0,
+          stagger: 0.08,
+          duration: 0.7,
+          ease: "expo.out",
+          delay: 0.4,
+          scrollTrigger: { trigger: ".about-body", start: "top 75%" },
+        });
+        gsap.from(".about-pull", {
+          rotation: 8,
+          y: 40,
+          opacity: 0,
+          duration: 1.1,
+          ease: "expo.out",
+          scrollTrigger: { trigger: ".about-pull", start: "top 80%" },
+        });
+        gsap.from(".about-lbl", { opacity: 0, x: -10, duration: 0.6, scrollTrigger: { trigger: ".about", start: "top 70%" } });
+      }
 
       // ---- off the clock: stacking cards ----
       const stack = gsap.utils.toArray<HTMLElement>(".board-card, .stack-card");
@@ -434,11 +501,34 @@ export default function Motion() {
         let ring = 0,
           ringTarget = 0,
           rot = 0;
+        // context: a cloth tag ("open ↗") over cards, a glyph over the 3D cards
+        let tagA = 0,
+          tagTarget = 0,
+          tagText = "",
+          glyphA = 0,
+          glyphTarget = 0,
+          glyphText = "";
         on(window, "pointermove", (ev) => {
           const e = ev as PointerEvent;
           mouse.x = e.clientX;
           mouse.y = e.clientY;
-          ringTarget = (e.target as Element | null)?.closest("a, button") ? 1 : 0;
+          const t = e.target as Element | null;
+          const zone = t?.closest<HTMLElement>("[data-cur]");
+          if (zone?.dataset.cur === "tag") {
+            tagText = zone.dataset.label ?? "open ↗";
+            tagTarget = 1;
+            glyphTarget = 0;
+            ringTarget = 0;
+          } else if (zone?.dataset.cur === "glyph") {
+            glyphText = zone.dataset.glyph ?? "";
+            glyphTarget = 1;
+            tagTarget = 0;
+            ringTarget = 0;
+          } else {
+            tagTarget = 0;
+            glyphTarget = 0;
+            ringTarget = t?.closest("a, button") ? 1 : 0;
+          }
         });
         tick(() => {
           pts[0].x += (mouse.x - pts[0].x) * 0.5;
@@ -448,6 +538,8 @@ export default function Motion() {
             pts[i].y += (pts[i - 1].y - pts[i].y) * 0.38;
           }
           ring += (ringTarget - ring) * 0.15;
+          tagA += (tagTarget - tagA) * 0.18;
+          glyphA += (glyphTarget - glyphA) * 0.18;
           rot += 0.02;
           c2d.setTransform(dpr, 0, 0, dpr, 0, 0);
           c2d.clearRect(0, 0, innerWidth, innerHeight);
@@ -464,9 +556,10 @@ export default function Motion() {
           c2d.lineCap = "round";
           c2d.lineJoin = "round";
           c2d.stroke();
-          // needle
+          // needle (fades out while a glyph is shown)
           const ang = Math.atan2(pts[0].y - pts[3].y, pts[0].x - pts[3].x);
           c2d.save();
+          c2d.globalAlpha = 1 - glyphA;
           c2d.translate(pts[0].x, pts[0].y);
           c2d.rotate(ang);
           c2d.beginPath();
@@ -481,6 +574,53 @@ export default function Motion() {
           c2d.lineWidth = 1;
           c2d.stroke();
           c2d.restore();
+          // glyph (pawn / tyre) over the 3D cards
+          if (glyphA > 0.02 && glyphText) {
+            c2d.save();
+            c2d.globalAlpha = glyphA;
+            c2d.translate(pts[0].x, pts[0].y);
+            c2d.scale(0.6 + 0.4 * glyphA, 0.6 + 0.4 * glyphA);
+            c2d.font = "28px system-ui, 'Segoe UI Symbol', sans-serif";
+            c2d.textAlign = "center";
+            c2d.textBaseline = "middle";
+            c2d.fillStyle = "#EFEBE3";
+            c2d.shadowColor = "rgba(0,0,0,.5)";
+            c2d.shadowBlur = 8;
+            c2d.fillText(glyphText, 0, 1);
+            c2d.restore();
+          }
+          // cloth tag ("open ↗") over cards
+          if (tagA > 0.02 && tagText) {
+            c2d.save();
+            c2d.globalAlpha = tagA;
+            c2d.translate(pts[0].x + 16, pts[0].y - 16);
+            c2d.scale(0.8 + 0.2 * tagA, 0.8 + 0.2 * tagA);
+            c2d.font = "600 12px Instrument Sans, system-ui, sans-serif";
+            const tw = c2d.measureText(tagText.toUpperCase()).width + 22;
+            const rr = (x: number, y: number, w: number, h: number, r: number) => {
+              c2d.beginPath();
+              c2d.moveTo(x + r, y);
+              c2d.arcTo(x + w, y, x + w, y + h, r);
+              c2d.arcTo(x + w, y + h, x, y + h, r);
+              c2d.arcTo(x, y + h, x, y, r);
+              c2d.arcTo(x, y, x + w, y, r);
+              c2d.closePath();
+            };
+            rr(0, -13, tw, 26, 6);
+            c2d.fillStyle = "#EFEBE3";
+            c2d.fill();
+            c2d.setLineDash([3, 3]);
+            c2d.strokeStyle = "#F2A93B";
+            c2d.lineWidth = 1.5;
+            rr(3, -10, tw - 6, 20, 4);
+            c2d.stroke();
+            c2d.setLineDash([]);
+            c2d.fillStyle = "#121A35";
+            c2d.textAlign = "center";
+            c2d.textBaseline = "middle";
+            c2d.fillText(tagText.toUpperCase(), tw / 2, 0.5);
+            c2d.restore();
+          }
           // stitched ring on links
           if (ring > 0.02) {
             c2d.save();

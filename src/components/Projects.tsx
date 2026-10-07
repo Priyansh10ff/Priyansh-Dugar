@@ -15,6 +15,8 @@ export default function Projects() {
         {PROJECTS.map((p, i) => (
           <a
             className="proj"
+            data-cur="tag"
+            data-label="open ↗"
             href={p.href}
             target="_blank"
             rel="noopener noreferrer"

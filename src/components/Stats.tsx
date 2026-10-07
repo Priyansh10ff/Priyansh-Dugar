@@ -64,7 +64,10 @@ export default function Stats({ stats }: { stats: AllStats }) {
       <p className="sec-sub">Pulled live from each platform and refreshed hourly. No screenshots, no rounding up.</p>
       <div className="stat-grid">
         {tiles.map((t) => (
-          <a className="stat" href={t.href} target="_blank" rel="noopener noreferrer" key={t.k} style={t.style as React.CSSProperties}>
+          <a className="stat" href={t.href} target="_blank" rel="noopener noreferrer" key={t.k} style={t.style as React.CSSProperties} data-cur="tag" data-label="open ↗">
+            <svg className="stitch" aria-hidden="true">
+              <rect width="100%" height="100%" rx="8" />
+            </svg>
             <span className="k">{t.k}</span>
             <span>
               <span className="v" data-n={t.n ?? undefined}>
