@@ -1,3 +1,5 @@
+import ThemeToggle from "@/components/ThemeToggle";
+
 export default function Nav() {
   return (
     <header className="nav">
@@ -13,6 +15,7 @@ export default function Nav() {
         <a className="pill magnetic" href="#contact">
           Say hello
         </a>
+        <ThemeToggle />
       </nav>
     </header>
   );

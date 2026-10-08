@@ -131,7 +131,9 @@ export default function PitStopScene() {
     if (!canvas || !wordsEl) return;
     const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
     const coarse = matchMedia("(pointer: coarse)").matches;
-    const lite = coarse && innerWidth < 768; // phones: full scrub, lighter render
+    const lowEnd = ((navigator as Navigator & { deviceMemory?: number }).deviceMemory ?? 8) < 4 || (navigator.hardwareConcurrency ?? 8) <= 4;
+    const phone = coarse && innerWidth < 768;
+    const lite = phone && lowEnd; // low-end phones only: pixel ratio 1, no shadows. Other phones: full scene, slightly lighter buffers
     const staticMode = reduce;
     setIsStatic(staticMode);
     const wordEls = Array.from(wordsEl.querySelectorAll<HTMLElement>("span"));
@@ -153,7 +155,7 @@ export default function PitStopScene() {
 
       const host = canvas.parentElement!;
       const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: "high-performance" });
-      renderer.setPixelRatio(lite ? 1 : Math.min(devicePixelRatio, 2));
+      renderer.setPixelRatio(lite ? 1 : Math.min(devicePixelRatio, phone ? 1.5 : 2));
       renderer.outputColorSpace = THREE.SRGBColorSpace;
       renderer.shadowMap.enabled = !lite;
       renderer.shadowMap.type = THREE.PCFSoftShadowMap;
@@ -205,7 +207,7 @@ export default function PitStopScene() {
       const key = new THREE.SpotLight("#ffffff", 110, 40, Math.PI / 5, 0.6, 1.6);
       key.position.set(4, 9, 5);
       key.castShadow = true;
-      key.shadow.mapSize.set(lite ? 1024 : 2048, lite ? 1024 : 2048);
+      key.shadow.mapSize.set(lite || phone ? 1024 : 2048, lite || phone ? 1024 : 2048);
       key.shadow.bias = -0.0004;
       scene.add(key);
       const rim = new THREE.PointLight(TEAL, 40, 25, 1.6);

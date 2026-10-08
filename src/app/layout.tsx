@@ -72,7 +72,15 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={`${display.variable} ${body.variable} ${hand.variable}`}>
+    <html lang="en" suppressHydrationWarning className={`${display.variable} ${body.variable} ${hand.variable}`}>
+      <head>
+        {/* Apply a remembered chalk choice before first paint. Default is denim. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `try{if(localStorage.getItem("theme")==="chalk")document.documentElement.classList.add("chalk")}catch(e){}`,
+          }}
+        />
+      </head>
       <body>{children}</body>
     </html>
   );

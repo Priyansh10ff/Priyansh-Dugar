@@ -46,7 +46,7 @@ export const FEATURED: Featured[] = [
       "Uptime and incident monitoring for websites and APIs. Scheduled checks, failure-threshold incident detection, deduplicated email alerts and a public status page.",
     tags: ["MongoDB", "Express", "React", "Node"],
     links: [{ label: "GitHub", href: "https://github.com/Priyansh10ff/Watchdog" }],
-    style: { "--w": "min(460px,80vw)", "--h": "54vh", "--mt": "10vh", "--r": "2.5deg", "--c": "#EFEBE3", "--tc": "#121A35", "--stitch": "#B83A28" },
+    style: { "--w": "min(460px,80vw)", "--h": "54vh", "--mt": "10vh", "--r": "2.5deg", "--c": "var(--patch-chalk)", "--tc": "var(--patch-ink)", "--stitch": "#B83A28" },
   },
   {
     title: "Interview Arena",
@@ -127,12 +127,12 @@ export const PROJECTS: Project[] = [
 
 // Rotations/colors cycle through these so the grid reads as patches, not tiles.
 export const PATCH_STYLES: Record<string, string>[] = [
-  { "--r": "-1.4deg", "--c": "#EFEBE3", "--tc": "#121A35", "--stitch": "#2E4078" },
+  { "--r": "-1.4deg", "--c": "var(--patch-chalk)", "--tc": "var(--patch-ink)", "--stitch": "#2E4078" },
   { "--r": "1.1deg", "--c": "#2E4078", "--tc": "#EFEBE3" },
   { "--r": "-0.8deg", "--c": "#F2A93B", "--tc": "#121A35", "--stitch": "#121A35" },
   { "--r": "1.6deg", "--c": "#B83A28", "--tc": "#EFEBE3" },
   { "--r": "-1.2deg", "--c": "#121A35", "--tc": "#EFEBE3" },
-  { "--r": "0.9deg", "--c": "#EFEBE3", "--tc": "#121A35", "--stitch": "#B83A28" },
+  { "--r": "0.9deg", "--c": "var(--patch-chalk)", "--tc": "var(--patch-ink)", "--stitch": "#B83A28" },
 ];
 
 export const TOOLS = ["Next.js", "TypeScript", "Supabase", "Claude API", "Tailwind", "Python", "FastAPI", "Convex", "Expo", "Cursor"];

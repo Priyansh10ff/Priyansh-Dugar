@@ -110,7 +110,7 @@ export default function Motion() {
         // where the name goes in phase 2: top-left, scaled down (tighter on phones)
         const r = nameEl.getBoundingClientRect();
         const h = heroEl.getBoundingClientRect();
-        const scale = innerWidth < 720 ? 0.82 : 0.6;
+        const scale = innerWidth < 720 ? 0.92 : 0.6;
         return { x: h.left + innerWidth * 0.05 - r.left, y: h.top + innerHeight * 0.12 - r.top, scale };
       };
       let threadLen = 1;
@@ -264,7 +264,7 @@ export default function Motion() {
       const dist = () => track.scrollWidth - innerWidth;
       const skew = { v: 0 };
       const setSkew = gsap.quickSetter(cards, "skewX", "deg");
-      const clampSkew = gsap.utils.clamp(-12, 12);
+      const clampSkew = gsap.utils.clamp(fine ? -12 : -5, fine ? 12 : 5); // touch: gentler skew so cards never overlap mid-fling
       gsap.to(track, {
         x: () => -dist(),
         ease: "none",
@@ -487,6 +487,16 @@ export default function Motion() {
         cleanups.push(() => document.documentElement.classList.remove("has-thread"));
         const cv = document.getElementById("thread") as HTMLCanvasElement;
         const c2d = cv.getContext("2d")!;
+        // cursor colours follow the theme (chalk mode swaps --chalk/--ink)
+        const theme = { chalk: "#EFEBE3", ink: "#121A35" };
+        const readTheme = () => {
+          const cs = getComputedStyle(document.documentElement);
+          theme.chalk = cs.getPropertyValue("--chalk").trim() || theme.chalk;
+          theme.ink = cs.getPropertyValue("--ink").trim() || theme.ink;
+        };
+        readTheme();
+        window.addEventListener("themechange", readTheme);
+        cleanups.push(() => window.removeEventListener("themechange", readTheme));
         let dpr = 1;
         const size = () => {
           dpr = Math.min(devicePixelRatio || 1, 2);
@@ -543,6 +553,7 @@ export default function Motion() {
           rot += 0.02;
           c2d.setTransform(dpr, 0, 0, dpr, 0, 0);
           c2d.clearRect(0, 0, innerWidth, innerHeight);
+          const CHALK = theme.chalk, INK = theme.ink;
           // thread
           c2d.beginPath();
           c2d.moveTo(pts[0].x, pts[0].y);
@@ -565,12 +576,12 @@ export default function Motion() {
           c2d.beginPath();
           c2d.moveTo(-14, 0);
           c2d.lineTo(6, 0);
-          c2d.strokeStyle = "#EFEBE3";
+          c2d.strokeStyle = CHALK;
           c2d.lineWidth = 2.6;
           c2d.stroke();
           c2d.beginPath();
           c2d.ellipse(-10, 0, 3, 1.6, 0, 0, Math.PI * 2);
-          c2d.strokeStyle = "#121A35";
+          c2d.strokeStyle = INK;
           c2d.lineWidth = 1;
           c2d.stroke();
           c2d.restore();
@@ -583,7 +594,7 @@ export default function Motion() {
             c2d.font = "28px system-ui, 'Segoe UI Symbol', sans-serif";
             c2d.textAlign = "center";
             c2d.textBaseline = "middle";
-            c2d.fillStyle = "#EFEBE3";
+            c2d.fillStyle = CHALK;
             c2d.shadowColor = "rgba(0,0,0,.5)";
             c2d.shadowBlur = 8;
             c2d.fillText(glyphText, 0, 1);
@@ -607,7 +618,7 @@ export default function Motion() {
               c2d.closePath();
             };
             rr(0, -13, tw, 26, 6);
-            c2d.fillStyle = "#EFEBE3";
+            c2d.fillStyle = CHALK;
             c2d.fill();
             c2d.setLineDash([3, 3]);
             c2d.strokeStyle = "#F2A93B";
@@ -615,7 +626,7 @@ export default function Motion() {
             rr(3, -10, tw - 6, 20, 4);
             c2d.stroke();
             c2d.setLineDash([]);
-            c2d.fillStyle = "#121A35";
+            c2d.fillStyle = INK;
             c2d.textAlign = "center";
             c2d.textBaseline = "middle";
             c2d.fillText(tagText.toUpperCase(), tw / 2, 0.5);
