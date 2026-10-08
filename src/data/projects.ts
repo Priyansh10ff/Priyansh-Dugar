@@ -93,35 +93,35 @@ export type Project = {
 
 const GH = "https://github.com/Priyansh10ff";
 
-// Everything else. Links marked TODO point at the profile until you give me the repo.
+// Everything else. Repo names are my best guess from your GitHub; fix any that 404.
 export const PROJECTS: Project[] = [
   {
-    title: "MeshRoom",
-    blurb: "AI 3D asset generator. Prompt in, mesh out.",
-    tags: ["AI", "3D"],
-    href: GH, // TODO
+    title: "SkillBarter",
+    blurb: "Time-credit skill exchange. Teach an hour, earn an hour, spend it learning something else. MERN, no payments involved.",
+    tags: ["React", "Express", "MongoDB"],
+    href: `${GH}/SkillBarter`,
+    kind: "wip",
+  },
+  {
+    title: "Syncfolio",
+    blurb: "Resume and portfolio as two modules from one source of truth. Update the resume, the portfolio follows, optionally.",
+    tags: ["Next.js", "Sync"],
+    href: `${GH}/syncfolio`,
+    kind: "wip",
+  },
+  {
+    title: "haul.",
+    blurb: "E-commerce store with Razorpay checkout, pill filters and a photo hero. Built for SST Web Dev, kept because it turned out clean.",
+    tags: ["MERN", "Razorpay"],
+    href: `${GH}/ShopKart_SST`,
     kind: "shipped",
   },
   {
-    title: "SQL Gym",
-    blurb: "Gamified SQL learning with a GitHub-style streak heatmap.",
-    tags: ["Next.js", "SQL"],
-    href: GH, // TODO
-    kind: "shipped",
-  },
-  {
-    title: "SKILLSBANK",
-    blurb: "Research ideation on skill systems for LLM agents and an overclogging degradation model.",
-    tags: ["LLM agents", "Research"],
-    href: GH, // TODO
-    kind: "research",
-  },
-  {
-    title: "PixelPeel",
-    blurb: "Desktop background remover built on classical OpenCV (GrabCut, edge refine, color range). No ML dependency. Cross-platform CI.",
-    tags: ["Python", "OpenCV", "PyInstaller"],
-    href: GH, // TODO
-    kind: "shipped",
+    title: "Ridezy",
+    blurb: "Uber for the web, written from scratch to learn the underlying pieces: live location, matching, trip state. No vibecoding allowed.",
+    tags: ["Web", "Maps", "Realtime"],
+    href: `${GH}/Ridezy`,
+    kind: "wip",
   },
 ];
 
